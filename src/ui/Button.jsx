@@ -47,3 +47,25 @@ const variations = {
     }
   `,
 };
+
+// styled.xxx 执行后所返回的 component, 是可以透传 props 的, 也就是说:
+// <Button> 的 onClick 是会被传递给底层的 <button> 的
+const Button = styled.button`
+  font-size: 1.4rem;
+  padding: 1.2rem 1.6rem;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-brand-600);
+  color: var(--color-brand-50);
+  /* 将背景色调整为白色, 就可以看到 box shadow 的效果了 */
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+
+  /* & 表示: current selector */
+  &:hover {
+    background-color: var(--color-brand-700);
+  }
+`;
+
+export default Button;
