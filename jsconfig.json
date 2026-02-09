@@ -1,9 +1,14 @@
 {
-    "compilerOptions": {
-        "plugins": [
-            {
-                "name": "@styled/typescript-styled-plugin"
-            }
-        ]
-    }
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "plugins": [
+      {
+        "name": "@styled/typescript-styled-plugin"
+      }
+    ]
+  }
 }
