@@ -60,12 +60,6 @@ const Button = styled.button`
   color: var(--color-brand-50);
   /* 将背景色调整为白色, 就可以看到 box shadow 的效果了 */
   box-shadow: var(--shadow-sm);
-  cursor: pointer;
-
-  /* & 表示: current selector */
-  &:hover {
-    background-color: var(--color-brand-700);
-  }
 `;
 
 export default Button;
