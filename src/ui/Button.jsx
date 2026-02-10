@@ -53,8 +53,10 @@ const variations = {
 const Button = styled.button`
   border: none;
   border-radius: var(--border-radius-sm);
-  /* 将背景色调整为白色, 就可以看到 box shadow 的效果了 */
   box-shadow: var(--shadow-sm);
+
+  ${(props) => variations[props.variation || "primary"]}
+  ${(props) => sizes[props.size || "medium"]}
 `;
 
 export default Button;
