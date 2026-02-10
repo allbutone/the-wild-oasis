@@ -1,44 +1,38 @@
-import styled from "styled-components";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Account from "./pages/Account";
+import Bookings from "./pages/Bookings";
+import Cabins from "./pages/Cabins";
+import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+import NewUsers from "./pages/Users";
+import PageNotFound from "./pages/PageNotFound";
 import GlobalStyles from "./styles/GlobalStyles";
-import Button from "./ui/Button";
-import Input from "./ui/Input";
-import Heading from "./ui/Heading";
-import Row from "./ui/Row";
+import AppLayout from "./ui/AppLayout";
 
-// styled components 借助了 es6 的 feature: tagged template literals
-// 当使用 H1 时, 会自动执行 styled.h1 这个 function, H1 就是这个 function 返回的 component
-const StyledApp = styled.div`
-  background-color: white;
-  padding: 10px;
-`;
-function App() {
+export default function App() {
   return (
     <>
-      {/* GlobalStyles 是 styled components 创建的全局样式, 需要作为 App 的 sibling 来声明 */}
-      {/* 且其下不接受任何 children */}
+      {/* 开发项目之前, 使用 GlobalStyles 来重置样式 */}
       <GlobalStyles />
-      <StyledApp>
-        {/* Row 的作用: 1) 指定 Row 之间的间距; 2) 指定 Row 的内容以何种形式排列 */}
-        <Row>
-          <Row type="horizontal">
-            <Heading as={"h1"}>The Wild Oasis</Heading>
-            <div>
-              <Heading as={"h2"}>Check in and out</Heading>
-              <Button onClick={() => alert("check in")}>Check in</Button>
-              <Button onClick={() => alert("check out")} variation="danger">Check out</Button>
-            </div>
-          </Row>
-          <Row>
-            <Heading as={"h3"}>Form</Heading>
-            <form>
-              <Input type="number" placeholder="number of guests" />
-              <Input type="number" placeholder="number of guests" />
-            </form>
-          </Row>
-        </Row>
-      </StyledApp>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<AppLayout />}>
+            {/* <Route index element={<Dashboard />}></Route> */}
+            {/* Navigate 是 useNavigate 的 declarative version, 如下, 其中 props.replace 如未赋值, 将会是 true */}
+            <Route
+              index
+              element={<Navigate replace to={"dashboard"} />}
+            ></Route>
+            <Route path="dashboard" element={<Dashboard />}></Route>
+            <Route path="account" element={<Account />}></Route>
+            <Route path="bookings" element={<Bookings />}></Route>
+            <Route path="cabins" element={<Cabins />}></Route>
+            <Route path="users" element={<NewUsers />}></Route>
+          </Route>
+          <Route path="login" element={<Login />}></Route>
+          <Route path="*" element={<PageNotFound />}></Route>
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }
-
-export default App;
