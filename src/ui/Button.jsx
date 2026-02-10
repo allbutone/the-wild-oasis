@@ -56,8 +56,6 @@ const Button = styled.button`
   font-weight: 500;
   border: none;
   border-radius: var(--border-radius-sm);
-  background-color: var(--color-brand-600);
-  color: var(--color-brand-50);
   /* 将背景色调整为白色, 就可以看到 box shadow 的效果了 */
   box-shadow: var(--shadow-sm);
 `;
