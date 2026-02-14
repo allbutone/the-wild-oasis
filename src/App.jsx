@@ -8,6 +8,7 @@ import NewUsers from "./pages/Users";
 import PageNotFound from "./pages/PageNotFound";
 import GlobalStyles from "./styles/GlobalStyles";
 import AppLayout from "./ui/AppLayout";
+import Settings from "./pages/Settings";
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
             <Route path="bookings" element={<Bookings />}></Route>
             <Route path="cabins" element={<Cabins />}></Route>
             <Route path="users" element={<NewUsers />}></Route>
+            <Route path="settings" element={<Settings />}></Route>
           </Route>
           <Route path="login" element={<Login />}></Route>
           <Route path="*" element={<PageNotFound />}></Route>

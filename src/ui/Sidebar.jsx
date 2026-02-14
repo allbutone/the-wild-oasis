@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import Logo from "./Logo";
+import MainNav from "./MainNav";
 
 //sidebar 占据第一行(1)到最后一行(-1)
 const StyledSideBar = styled.aside`
@@ -8,7 +10,17 @@ const StyledSideBar = styled.aside`
 
   grid-row: 1 / -1;
   grid-column: 1 / span 1;
+
+  display: flex;
+  flex-direction: column;
+  /* 让 Logo 和 MainNav 之间拉开间距 */
+  gap: 3.2rem;
 `;
 export default function Sidebar() {
-  return <StyledSideBar>sidebar</StyledSideBar>;
+  return (
+    <StyledSideBar>
+      <Logo />
+      <MainNav />
+    </StyledSideBar>
+  );
 }
