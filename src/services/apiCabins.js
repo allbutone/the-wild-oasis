@@ -11,8 +11,22 @@ export async function getCabins() {
 export async function delCabin(id) {
   // 要想成功删除, 需要为 table 'cabins' 的 row level policies 添加 delete policy
   const { error } = await supabase.from("cabins").delete().eq("id", id);
-  if(error){
+  if (error) {
     throw new Error(error.message);
   }
   // 如果没有 return value, 默认 return undefined;
+}
+
+export async function createCabin(cabin) {
+  // 实测 data 的类型是 array, 表示 modified rows
+  const { data, error } = await supabase
+    .from("cabins")
+    .insert([cabin])
+    .select();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  console.log(`new created cabin: ${data}`); 
+  return data;
 }
