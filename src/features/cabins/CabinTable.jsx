@@ -5,6 +5,7 @@ import CabinRow from "./CabinRow.jsx";
 import Spinner from "../../ui/Spinner.jsx";
 
 const Table = styled.div`
+  flex-grow: 1;
   border: 1px solid var(--color-grey-200);
 
   font-size: 1.4rem;
