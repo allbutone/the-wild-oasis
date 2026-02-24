@@ -43,29 +43,56 @@ const Discount = styled.div`
   color: var(--color-green-700);
 `;
 
-export default function CabinRow({cabin}) {
+export default function CabinRow({ cabin }) {
   const queryClient = useQueryClient();
-  const { mutate, isPending} = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: delCabin,
     onSuccess: (val) => {
-      toast.success(`删除成功, 返回的结果是: ${val}`);// 测试可知: val 是 delCabin 的 return value
+      toast.success(`删除成功, 返回的结果是: ${val}`); // 测试可知: val 是 delCabin 的 return value
       queryClient.invalidateQueries({
-        queryKey: ['cabins'],
-      })
+        queryKey: ["cabins"],
+      });
     },
-    onError: err => {
-      toast.error(`删除失败, 报错信息是: ${err.message}`);
-    }
+    onError: (err) => {
+      // toast.error(`删除失败, 报错信息是: ${err.message}`);
+      // 下面是带 dismiss 按钮的 toast
+      toast((t) => (
+        <span>
+          oops! error occurred: <b>{err.message}</b>
+          <span
+            onClick={() => toast.dismiss(t.id)}
+            style={{
+              position: "absolute",
+              top: ".5rem",
+              right: ".5rem",
+              borderRadius: "50%",
+              height: "2rem",
+              width: "2rem",
+              fontSize: "1.5rem",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: 'var(--color-grey-200)',
+              color: 'var(--color-grey-700)',
+              cursor: 'pointer',
+            }}
+          >
+            &times;
+          </span>
+        </span>
+      ));
+    },
   });
   return (
     <TableRow>
-      <Img src={cabin.image}/>
+      <Img src={cabin.image} />
       <Cabin>{`id/${cabin.id}-name/${cabin.name}`}</Cabin>
       <div>{cabin.maxCapacity}</div>
       <Price>{formatCurrency(cabin.regularPrice)}</Price>
       <Discount>{formatCurrency(cabin.discount)}</Discount>
-      <button onClick={() => mutate(cabin.id)} disabled={isPending}>delete</button>
+      <button onClick={() => mutate(cabin.id)} disabled={isPending}>
+        delete
+      </button>
     </TableRow>
-  )
+  );
 }
-
