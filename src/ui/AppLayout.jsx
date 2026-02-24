@@ -6,6 +6,7 @@ import styled from "styled-components";
 const StyledMain = styled.main`
   background-color: var(--color-grey-50);
   padding: 4rem 4.8rem 6.4rem;
+  overflow-y: scroll;
 `;
 //grid-template-columns 负责分配列空间(宽度)
 //grid-template-rows 负责分配行空间(高度)
