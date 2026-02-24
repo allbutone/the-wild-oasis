@@ -1,4 +1,7 @@
 import styled from "styled-components";
+import { formatCurrency } from "../../utils/helpers";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { delCabin } from "../../services/apiCabins.js";
 
 const TableRow = styled.div`
   display: grid;
@@ -38,3 +41,30 @@ const Discount = styled.div`
   font-weight: 500;
   color: var(--color-green-700);
 `;
+
+export default function CabinRow({cabin}) {
+  const queryClient = useQueryClient();
+  const { mutate, isPending} = useMutation({
+    mutationFn: delCabin,
+    onSuccess: (val) => {
+      // alert(val);// 测试可知: val 是 delCabin 的 return value
+      queryClient.invalidateQueries({
+        queryKey: ['cabins'],
+      })
+    },
+    onError: err => {
+      alert(err.message);
+    }
+  });
+  return (
+    <TableRow>
+      <Img src={cabin.image}/>
+      <Cabin>{`id/${cabin.id}-name/${cabin.name}`}</Cabin>
+      <div>{cabin.maxCapacity}</div>
+      <Price>{formatCurrency(cabin.regularPrice)}</Price>
+      <Discount>{formatCurrency(cabin.discount)}</Discount>
+      <button onClick={() => mutate(cabin.id)} disabled={isPending}>delete</button>
+    </TableRow>
+  )
+}
+
