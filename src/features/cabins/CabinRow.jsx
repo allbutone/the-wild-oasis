@@ -42,6 +42,28 @@ const Discount = styled.div`
   font-weight: 500;
   color: var(--color-green-700);
 `;
+// toaster div 默认是 fixed 定位的, 因此其内的 toast div 可以使用 absolute 定位如下:
+const StyledCloseButton = styled.span`
+  position: absolute;
+  top: -.5rem;
+  right: -.5rem;
+  border-radius: 50%;
+  height: 2rem;
+  width: 2rem;
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  color: var(--color-grey-700);
+  background-color: var(--color-grey-200);
+
+  &:hover {
+    color: var(--color-grey-200);
+    background-color: var(--color-red-700);
+  }
+`;
 
 export default function CabinRow({ cabin }) {
   const queryClient = useQueryClient();
@@ -59,26 +81,9 @@ export default function CabinRow({ cabin }) {
       toast((t) => (
         <span>
           oops! error occurred: <b>{err.message}</b>
-          <span
-            onClick={() => toast.dismiss(t.id)}
-            style={{
-              position: "absolute",
-              top: ".5rem",
-              right: ".5rem",
-              borderRadius: "50%",
-              height: "2rem",
-              width: "2rem",
-              fontSize: "1.5rem",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: 'var(--color-grey-200)',
-              color: 'var(--color-grey-700)',
-              cursor: 'pointer',
-            }}
-          >
+          <StyledCloseButton onClick={() => toast.dismiss(t.id)}>
             &times;
-          </span>
+          </StyledCloseButton>
         </span>
       ));
     },
