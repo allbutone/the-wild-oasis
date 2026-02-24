@@ -3,11 +3,11 @@ import styled from "styled-components";
 import { getCabins } from "../../services/apiCabins.js";
 import CabinRow from "./CabinRow.jsx";
 import Spinner from "../../ui/Spinner.jsx";
+import toast from "react-hot-toast";
 
 const Table = styled.div`
   flex-grow: 1;
   border: 1px solid var(--color-grey-200);
-
   font-size: 1.4rem;
   background-color: var(--color-grey-0);
   border-radius: 7px;
@@ -35,10 +35,11 @@ export default function CabinTable() {
     queryFn: getCabins, // queryFn 是一个 return value 为 promise 的 function
   });
   if (isLoading) {
-    return <Spinner></Spinner>
+    return <Spinner></Spinner>;
   }
   if (isError) {
-    return <div>error occurred {error.message}</div>;
+    toast.error(error.message);
+    return null;
   }
   return (
     // role: div as a table

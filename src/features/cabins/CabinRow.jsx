@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { delCabin } from "../../services/apiCabins.js";
+import toast from "react-hot-toast";
 
 const TableRow = styled.div`
   display: grid;
@@ -47,13 +48,13 @@ export default function CabinRow({cabin}) {
   const { mutate, isPending} = useMutation({
     mutationFn: delCabin,
     onSuccess: (val) => {
-      // alert(val);// 测试可知: val 是 delCabin 的 return value
+      toast.success(`删除成功, 返回的结果是: ${val}`);// 测试可知: val 是 delCabin 的 return value
       queryClient.invalidateQueries({
         queryKey: ['cabins'],
       })
     },
     onError: err => {
-      alert(err.message);
+      toast.error(`删除失败, 报错信息是: ${err.message}`);
     }
   });
   return (

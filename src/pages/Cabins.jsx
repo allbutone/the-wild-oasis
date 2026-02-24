@@ -5,9 +5,9 @@ import { getCabins } from "../services/apiCabins.js";
 import CabinTable from "../features/cabins/CabinTable";
 
 function Cabins() {
-  useEffect(() => {
-    getCabins().then((cabins) => console.log(cabins));
-  }, []);
+  // useEffect(() => {
+  //   getCabins().then((cabins) => console.log(cabins));
+  // }, []);
   return (
     <>
       <Row type="horizontal">
