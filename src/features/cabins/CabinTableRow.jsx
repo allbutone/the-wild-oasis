@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { delCabin } from "../../services/apiCabins.js";
 import toast from "react-hot-toast";
 
-const TableRow = styled.div`
+const StyledCabinTableRow = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
   column-gap: 2.4rem;
@@ -65,9 +65,9 @@ const StyledCloseButton = styled.span`
   }
 `;
 
-export default function CabinRow({ cabin }) {
+export default function CabinTableRow({ cabin }) {
   const queryClient = useQueryClient();
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending: isDeleting } = useMutation({
     mutationFn: delCabin,
     onSuccess: (val) => {
       toast.success(`删除成功`); // 测试可知: val 是 delCabin 的 return value
@@ -89,15 +89,15 @@ export default function CabinRow({ cabin }) {
     },
   });
   return (
-    <TableRow>
+    <StyledCabinTableRow>
       <Img src={cabin.image} />
       <Cabin>{`id/${cabin.id}-name/${cabin.name}`}</Cabin>
       <div>{cabin.maxCapacity}</div>
       <Price>{formatCurrency(cabin.regularPrice)}</Price>
       <Discount>{formatCurrency(cabin.discount)}</Discount>
-      <button onClick={() => mutate(cabin.id)} disabled={isPending}>
+      <button onClick={() => mutate(cabin.id)} disabled={isDeleting}>
         delete
       </button>
-    </TableRow>
+    </StyledCabinTableRow>
   );
 }
