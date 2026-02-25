@@ -3,6 +3,8 @@ import { formatCurrency } from "../../utils/helpers";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { delCabin } from "../../services/apiCabins.js";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import CabinForm from "./CabinForm";
 
 const StyledCabinTableRow = styled.div`
   display: grid;
@@ -45,8 +47,8 @@ const Discount = styled.div`
 // toaster div 默认是 fixed 定位的, 因此其内的 toast div 可以使用 absolute 定位如下:
 const StyledCloseButton = styled.span`
   position: absolute;
-  top: -.5rem;
-  right: -.5rem;
+  top: -0.5rem;
+  right: -0.5rem;
   border-radius: 50%;
   height: 2rem;
   width: 2rem;
@@ -66,6 +68,8 @@ const StyledCloseButton = styled.span`
 `;
 
 export default function CabinTableRow({ cabin }) {
+  const [showForm, setShowForm] = useState(false); // 是否展示 cabin form 来 edit 某个 cabin row
+
   const queryClient = useQueryClient();
   const { mutate, isPending: isDeleting } = useMutation({
     mutationFn: delCabin,
@@ -89,15 +93,31 @@ export default function CabinTableRow({ cabin }) {
     },
   });
   return (
-    <StyledCabinTableRow>
-      <Img src={cabin.image} />
-      <Cabin>{`id/${cabin.id}-name/${cabin.name}`}</Cabin>
-      <div>{cabin.maxCapacity}</div>
-      <Price>{formatCurrency(cabin.regularPrice)}</Price>
-      <Discount>{formatCurrency(cabin.discount)}</Discount>
-      <button onClick={() => mutate(cabin.id)} disabled={isDeleting}>
-        delete
-      </button>
-    </StyledCabinTableRow>
+    // StyledCabinTableRow 通过 6 column 展示 6 fields of cabin 如下
+    <>
+      <StyledCabinTableRow>
+        {/* column1 */}
+        <Img src={cabin.image} />
+        {/* column2 */}
+        <Cabin>{`${cabin.id}-${cabin.name}`}</Cabin>
+        {/* column3 */}
+        <div>{cabin.maxCapacity}</div>
+        {/* column4 */}
+        <Price>{formatCurrency(cabin.regularPrice)}</Price>
+        {/* column5 */}
+        <Discount>{formatCurrency(cabin.discount)}</Discount>
+        {/* column6 */}
+        {/* 只有 6 columns, 因此这两个 button 就只好合并到一个 column (由 div 充当) 中了 */}
+        <div>
+          <button onClick={() => mutate(cabin.id)} disabled={isDeleting}>
+            delete
+          </button>
+          <button onClick={() => setShowForm((showForm) => !showForm)}>
+            toggle edit form
+          </button>
+        </div>
+      </StyledCabinTableRow>
+      {showForm && <CabinForm cabin={cabin}/>}
+    </>
   );
 }

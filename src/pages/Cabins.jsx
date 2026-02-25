@@ -4,7 +4,7 @@ import Row from "../ui/Row";
 import { getCabins } from "../services/apiCabins.js";
 import CabinTable from "../features/cabins/CabinTable";
 import Button from "../ui/Button";
-import CreateCabinForm from "../features/cabins/CreateCabinForm";
+import CabinForm from "../features/cabins/CabinForm";
 
 function Cabins() {
   const [showForm, setShowForm] = useState(false);
@@ -19,8 +19,8 @@ function Cabins() {
       </Row>
       <Row type="vertical">
         <CabinTable />
-        <Button onClick={() => setShowForm(s => !s)}>toggle form</Button>
-        {showForm && <CreateCabinForm />}
+        <Button onClick={() => setShowForm(s => !s)}>toggle add form</Button>
+        {showForm && <CabinForm />}
       </Row>
     </>
   );

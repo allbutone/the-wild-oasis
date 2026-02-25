@@ -7,11 +7,11 @@ import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createCabin } from "../../services/apiCabins";
+import { createOrUpdateCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
 import { ErrorMessage } from "@hookform/error-message";
 
-const FormRow = styled.div`
+const CabinFormRow = styled.div`
   display: grid;
   align-items: center;
   grid-template-columns: 24rem 1fr 1.2fr;
@@ -47,23 +47,32 @@ const Error = styled.span`
   color: var(--color-red-700);
 `;
 
-function CreateCabinForm() {
+//CabinForm 同时用于 create cabin 和 edit/update cabin
+function CabinForm({ cabin }) {
+  // 如果传入了 props 'cabin', 那么说明是要 edit/update cabin
+  const isEdit = Boolean(cabin);
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm({ defaultValues: isEdit ? cabin : {} }); //defaultValues 是一个 object, 用于填充同名的 form field
+
   const queryClient = useQueryClient();
   const { mutate, isPending } = useMutation({
-    mutationFn: createCabin,
-    onSuccess: (val) => {
-      const newCreatedCabin = val[0];
+    mutationFn: createOrUpdateCabin,
+    onSuccess: (cabin) => {
       toast.success(
-        `successfully create one cabin with id ${newCreatedCabin.id} and name ${newCreatedCabin.name}`,
+        `successfully ${isEdit ? "updated" : "created"} one cabin with id ${cabin.id} and name ${cabin.name}`,
       );
       queryClient.invalidateQueries({ queryKey: ["cabins"] });
-      reset(); // 重置表单
+
+      // 重置表单
+      // 如果 useForm({defaultValues: xxxObj}), 那么 reset() 将按照 xxxObj 进行重置
+      // 如果不满意, 可以 reset(yyyObj), 此时将按照 yyyObj 进行重置
+      // 此时: 如果想重置 input with name 'name', 就 reset({name: ''})
+      reset(); 
     },
     // err 是 mutationFn 执行时产生的 error instance, 而不是 react-hook-form 校验时产生的 error
     onError: (err) =>
@@ -73,7 +82,22 @@ function CreateCabinForm() {
   function onSubmit(formDataObj) {
     console.log(`提交的表单数据为:`);
     console.log(formDataObj);
-    mutate(formDataObj);
+    // 根据 https://tanstack.com/query/v4/docs/framework/react/reference/useMutation 可知:
+    // mutate 第一个参数是 variables, 是一个 object, 会被传递给 mutationFn
+    // mutate 第二个参数是 object (里面可以指定 onSuccess / onSettled / onError)
+    let payload;
+    if (isEdit) {
+      // 如果是 edit/update cabin, 由于 cabin form 中并没有 field 'id'
+      // 因此这里需要将 id 塞进 formDataObj 如下:
+      payload = { ...formDataObj, id: cabin.id };
+      console.log(`editing cabin with payload:`);
+    } else {
+      // 如果是 create cabin, formDataObj 内没有 id
+      payload = formDataObj;
+      console.log(`creating cabin with payload:`);
+    }
+    console.log(payload);
+    mutate(payload);
   }
   function onError(errorObj) {
     console.log(`检测到的表达错误为:`);
@@ -81,7 +105,7 @@ function CreateCabinForm() {
   }
   return (
     <Form onSubmit={handleSubmit(onSubmit, onError)}>
-      <FormRow>
+      <CabinFormRow>
         <Label htmlFor="name">Name</Label>
         {/* 参考 https://react-hook-form.com/docs/useform/register 可知: */}
         {/* required 的值可以是 true/false, 也可以是 {value: true/false, message: 'xxx'} */}
@@ -111,9 +135,9 @@ function CreateCabinForm() {
           name="name"
           render={({ message }) => <Error>{message}</Error>}
         />
-      </FormRow>
+      </CabinFormRow>
 
-      <FormRow>
+      <CabinFormRow>
         <Label htmlFor="maxCapacity">Maximum capacity</Label>
         <Input
           type="number"
@@ -143,9 +167,9 @@ function CreateCabinForm() {
           name="maxCapacity"
           render={(errorObj) => <Error>{errorObj.message}</Error>}
         />
-      </FormRow>
+      </CabinFormRow>
 
-      <FormRow>
+      <CabinFormRow>
         <Label htmlFor="regularPrice">Regular price</Label>
         <Input
           type="number"
@@ -170,9 +194,9 @@ function CreateCabinForm() {
           name="regularPrice"
           render={({ message }) => <Error>{message}</Error>}
         />
-      </FormRow>
+      </CabinFormRow>
 
-      <FormRow>
+      <CabinFormRow>
         <Label htmlFor="discount">Discount</Label>
         <Input
           type="number"
@@ -219,9 +243,9 @@ function CreateCabinForm() {
           name="discount"
           render={({ message }) => <Error>{message}</Error>}
         />
-      </FormRow>
+      </CabinFormRow>
 
-      <FormRow>
+      <CabinFormRow>
         <Label htmlFor="description">Description for website</Label>
         <Textarea
           type="number"
@@ -238,31 +262,33 @@ function CreateCabinForm() {
           name="description"
           render={({ message }) => <Error>{message}</Error>}
         />
-      </FormRow>
+      </CabinFormRow>
 
-      <FormRow>
+      <CabinFormRow>
         <Label htmlFor="image">Cabin photo</Label>
         <FileInput
           id="image"
           accept="image/*"
           {...register("image", {
-            required: {
-              value: true,
-              message: "value is required for this field",
-            },
+            required: isEdit
+              ? false // edit/update cabin 时, defaultValues 会填充 formDataObj.image, 但 field input 'image' 是没有值的, 无法通过校验
+              : {
+                  value: true,
+                  message: "value is required for this field",
+                },
           })}
         />
-      </FormRow>
+      </CabinFormRow>
 
-      <FormRow>
+      <CabinFormRow>
         {/* type is an HTML attribute! */}
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button disabled={isPending}>Add Cabin</Button>
-      </FormRow>
+        <Button disabled={isPending}>{isEdit ? "Edit" : "Add"}</Button>
+      </CabinFormRow>
     </Form>
   );
 }
 
-export default CreateCabinForm;
+export default CabinForm;
