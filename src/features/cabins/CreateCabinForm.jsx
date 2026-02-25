@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
+import { ErrorMessage } from "@hookform/error-message";
 
 const FormRow = styled.div`
   display: grid;
@@ -47,7 +48,12 @@ const Error = styled.span`
 `;
 
 function CreateCabinForm() {
-  const { register, handleSubmit, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
   const queryClient = useQueryClient();
   const { mutate, isPending } = useMutation({
     mutationFn: createCabin,
@@ -59,46 +65,193 @@ function CreateCabinForm() {
       queryClient.invalidateQueries({ queryKey: ["cabins"] });
       reset(); // 重置表单
     },
+    // err 是 mutationFn 执行时产生的 error instance, 而不是 react-hook-form 校验时产生的 error
     onError: (err) =>
       toast.error(`oops! detected error with message ${err.message}`),
   });
-  // 注意: 下面的 onSubmit 是供 handleSubmit 调用的 callback, 其参数为 data (即: 表单数据), 而非 event
-  function onSubmit(formData) {
-    mutate(formData);
+  // 注意: 下面的 onSubmit 是给 handleSubmit 调用的 callback, 其参数为 formDataObj, 而非 html onSubmit 所接收的 event
+  function onSubmit(formDataObj) {
+    console.log(`提交的表单数据为:`);
+    console.log(formDataObj);
+    mutate(formDataObj);
+  }
+  function onError(errorObj) {
+    console.log(`检测到的表达错误为:`);
+    console.log(errorObj);
   }
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
+    <Form onSubmit={handleSubmit(onSubmit, onError)}>
       <FormRow>
-        <Label htmlFor="name">Cabin name</Label>
-        <Input type="text" {...register("name", { required: true })} />
+        <Label htmlFor="name">Name</Label>
+        {/* 参考 https://react-hook-form.com/docs/useform/register 可知: */}
+        {/* required 的值可以是 true/false, 也可以是 {value: true/false, message: 'xxx'} */}
+        {/* 其实前者就是后者的一种特例, 相当于 {value: true/false, message: ''} */}
+        {/* 下面 error message 为 '' */}
+        {/* <Input type="text" {...register("name", { required: true })} /> */}
+        {/* 下面 error message 为指定的内容 */}
+        <Input
+          type="text"
+          {...register("name", {
+            required: {
+              value: true,
+              message: "value is required for this field",
+            },
+          })}
+        />
+
+        {/* 额外安装 @hookform/error-message 后, 可以使用 ErrorMessage 来展示 field error  */}
+        {/* 参考 https://react-hook-form.com/docs/useformstate/errormessage */}
+        {/* 第一种展示方式: 在 devtools 中发现其实就是将 text 原封展示出来, 没有任何元素包裹, 也没有任何样式*/}
+        {/* <ErrorMessage errors={errors} name="name" /> */}
+        {/* 第二种展示方式: 借助 render 自定义渲染 error message */}
+        {/* 注意: render 是一个 function, 其参数为 errors.name 对应的 error object, 需要解构才能拿到其中的 message */}
+        {/* 因此 render function 应该指定为 ({ message }) => <Error>{message}</Error> 而非想象的 (errMsg) => <Error>{errMsg}</Error> */}
+        <ErrorMessage
+          errors={errors}
+          name="name"
+          render={({ message }) => <Error>{message}</Error>}
+        />
       </FormRow>
 
       <FormRow>
         <Label htmlFor="maxCapacity">Maximum capacity</Label>
         <Input
           type="number"
-          {...register("maxCapacity", { min: 1, max: 10 })}
+          defaultValue={1}
+          {...register("maxCapacity", {
+            required: {
+              value: true,
+              message: "value is required for this field",
+            },
+            min: {
+              value: 1,
+              message: "max capacity should be between 1 and 10!",
+            },
+            max: {
+              value: 10,
+              message: "max capacity should be between 1 and 10!",
+            },
+            // 实测发现: type 为 number 的 input 可以输入 01 这样的内容,  前置 0 是允许的
+            // 最终会将 maxCapacity: '01' 提交给后台, 但后台会报错, 因此, 需要借助 valueAsNumber 进行转换
+            // 这样最终会将 maxCapacity: 1 提交给后台, 后台不再报错
+            // 由此可知: react-hook-form 不仅提供了 field validation 还提供了 field validation 之前所需的 field convertion
+            valueAsNumber: true,
+          })}
+        />
+        <ErrorMessage
+          errors={errors}
+          name="maxCapacity"
+          render={(errorObj) => <Error>{errorObj.message}</Error>}
         />
       </FormRow>
 
       <FormRow>
         <Label htmlFor="regularPrice">Regular price</Label>
-        <Input type="number" {...register("regularPrice")} />
+        <Input
+          type="number"
+          {...register("regularPrice", {
+            required: {
+              value: true,
+              message: "value is required for this field",
+            },
+            max: {
+              value: 1000,
+              message: "price should at most be 1000",
+            },
+            min: {
+              value: 1,
+              message: "price should at least be 1",
+            },
+            valueAsNumber: true,
+          })}
+        />
+        <ErrorMessage
+          errors={errors}
+          name="regularPrice"
+          render={({ message }) => <Error>{message}</Error>}
+        />
       </FormRow>
 
       <FormRow>
         <Label htmlFor="discount">Discount</Label>
-        <Input type="number" defaultValue={0} {...register("discount")} />
+        <Input
+          type="number"
+          defaultValue={0}
+          {...register("discount", {
+            required: {
+              value: true,
+              message: "value is required for this field",
+            },
+            valueAsNumber: true,
+            // https://react-hook-form.com/docs/useform/register 中并没有提到 validate 对应的 function 的 signature 是什么样的
+            // 查看如下源码:
+            // RegisterOptions
+            // https://github.com/react-hook-form/react-hook-form/blob/85684f930c520310da51fec382c8b30f6da11502/src/types/validator.ts#L27
+            // 可知 validate 的值可以是 Validate 类型
+            // 继续查看源码:
+            // Validate
+            // https://github.com/react-hook-form/react-hook-form/blob/85684f930c520310da51fec382c8b30f6da11502/src/types/validator.ts#L22
+            // 可知 Validate 的 shape 如下:
+            // export type Validate<TFieldValue, TFormValues> = (
+            //   value: TFieldValue,
+            //   formValues: TFormValues,
+            // ) => ValidateResult | Promise<ValidateResult>;
+            // export type ValidateResult = Message | Message[] | boolean | undefined;
+            // export type Message = string;
+            // 由此可知, validate 的值如果是 function, 那么:
+            // - 参数分别是: fieldValue 和 formValues (实测是一个 object)
+            // - 返回值是: boolean / string (充当 error message)
+            validate: (fieldValue, formValues) => {
+              // console.log(`fieldValue: `);
+              // console.log(fieldValue);
+              // console.log(`formValues: `);
+              // console.log(formValues);
+              const discount = fieldValue;
+              const regularPrice = formValues.regularPrice;
+              return (
+                discount < regularPrice || "discount should be less than price"
+              );
+            },
+          })}
+        />
+        <ErrorMessage
+          errors={errors}
+          name="discount"
+          render={({ message }) => <Error>{message}</Error>}
+        />
       </FormRow>
 
       <FormRow>
         <Label htmlFor="description">Description for website</Label>
-        <Textarea type="number" defaultValue="" {...register("description")} />
+        <Textarea
+          type="number"
+          defaultValue=""
+          {...register("description", {
+            required: {
+              value: true,
+              message: "value is required for this field",
+            },
+          })}
+        />
+        <ErrorMessage
+          errors={errors}
+          name="description"
+          render={({ message }) => <Error>{message}</Error>}
+        />
       </FormRow>
 
       <FormRow>
         <Label htmlFor="image">Cabin photo</Label>
-        <FileInput id="image" accept="image/*" />
+        <FileInput
+          id="image"
+          accept="image/*"
+          {...register("image", {
+            required: {
+              value: true,
+              message: "value is required for this field",
+            },
+          })}
+        />
       </FormRow>
 
       <FormRow>

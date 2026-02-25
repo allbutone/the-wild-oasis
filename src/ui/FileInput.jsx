@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
-const FileInput = styled.input`
+// 将 attribute type="file" 封装到 styled component `FileInput` 内
+const FileInput = styled.input.attrs({type: 'file'})`
   font-size: 1.4rem;
   border-radius: var(--border-radius-sm);
 

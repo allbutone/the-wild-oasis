@@ -70,7 +70,7 @@ export default function CabinRow({ cabin }) {
   const { mutate, isPending } = useMutation({
     mutationFn: delCabin,
     onSuccess: (val) => {
-      toast.success(`删除成功, 返回的结果是: ${val}`); // 测试可知: val 是 delCabin 的 return value
+      toast.success(`删除成功`); // 测试可知: val 是 delCabin 的 return value
       queryClient.invalidateQueries({
         queryKey: ["cabins"],
       });
