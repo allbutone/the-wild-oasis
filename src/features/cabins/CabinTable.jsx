@@ -1,9 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
-import { getCabins } from "../../services/apiCabins.js";
 import CabinTableRow from "./CabinTableRow.jsx";
 import Spinner from "../../ui/Spinner.jsx";
 import toast from "react-hot-toast";
+import { useCabins } from "./useCabins.js";
 
 const StyledCabinTable = styled.div`
   flex-grow: 1;
@@ -30,10 +29,7 @@ const StyledCabinTableHeader = styled.header`
 `;
 
 export default function CabinTable() {
-  const { isLoading, data, isError, error } = useQuery({
-    queryKey: ["cabins"],
-    queryFn: getCabins, // queryFn 是一个 return value 为 promise 的 function
-  });
+  const { isLoading, data, isError, error } = useCabins();
   if (isLoading) {
     return <Spinner></Spinner>;
   }

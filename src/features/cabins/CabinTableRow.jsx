@@ -1,10 +1,9 @@
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { delCabin } from "../../services/apiCabins.js";
-import toast from "react-hot-toast";
 import { useState } from "react";
 import CabinForm from "./CabinForm";
+import { useDelCabin } from "./useDelCabin";
+import toast from "react-hot-toast";
 
 const StyledCabinTableRow = styled.div`
   display: grid;
@@ -69,29 +68,25 @@ const StyledCloseButton = styled.span`
 
 export default function CabinTableRow({ cabin }) {
   const [showForm, setShowForm] = useState(false); // 是否展示 cabin form 来 edit 某个 cabin row
+  const { mutate, isDeleting } = useDelCabin();
 
-  const queryClient = useQueryClient();
-  const { mutate, isPending: isDeleting } = useMutation({
-    mutationFn: delCabin,
-    onSuccess: (val) => {
-      toast.success(`删除成功`); // 测试可知: val 是 delCabin 的 return value
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-    },
-    onError: (err) => {
-      // toast.error(`删除失败, 报错信息是: ${err.message}`);
-      // 下面是带 dismiss 按钮的 toast
-      toast((t) => (
-        <span>
-          oops! error occurred: <b>{err.message}</b>
-          <StyledCloseButton onClick={() => toast.dismiss(t.id)}>
-            &times;
-          </StyledCloseButton>
-        </span>
-      ));
-    },
-  });
+  function handleDel() {
+    mutate(cabin.id, {
+      onError: (err) => {
+        // toast.error(`删除失败, 报错信息是: ${err.message}`);
+        // 下面是带 dismiss 按钮的 toast
+        toast((t) => (
+          <span>
+            oops! error occurred: <b>{err.message}</b>
+            <StyledCloseButton onClick={() => toast.dismiss(t.id)}>
+              &times;
+            </StyledCloseButton>
+          </span>
+        ));
+      },
+    });
+  }
+
   return (
     // StyledCabinTableRow 通过 6 column 展示 6 fields of cabin 如下
     <>
@@ -109,7 +104,7 @@ export default function CabinTableRow({ cabin }) {
         {/* column6 */}
         {/* 只有 6 columns, 因此这两个 button 就只好合并到一个 column (由 div 充当) 中了 */}
         <div>
-          <button onClick={() => mutate(cabin.id)} disabled={isDeleting}>
+          <button onClick={handleDel} disabled={isDeleting}>
             delete
           </button>
           <button onClick={() => setShowForm((showForm) => !showForm)}>
@@ -117,7 +112,7 @@ export default function CabinTableRow({ cabin }) {
           </button>
         </div>
       </StyledCabinTableRow>
-      {showForm && <CabinForm cabin={cabin}/>}
+      {showForm && <CabinForm cabin={cabin} />}
     </>
   );
 }

@@ -6,10 +6,8 @@ import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createOrUpdateCabin } from "../../services/apiCabins";
-import toast from "react-hot-toast";
 import { ErrorMessage } from "@hookform/error-message";
+import { useCreateOrUpdateCabin } from "./useCreateOrUpdateCabin";
 
 const CabinFormRow = styled.div`
   display: grid;
@@ -50,34 +48,16 @@ const Error = styled.span`
 //CabinForm 同时用于 create cabin 和 edit/update cabin
 function CabinForm({ cabin }) {
   // 如果传入了 props 'cabin', 那么说明是要 edit/update cabin
-  const isEdit = Boolean(cabin);
+  const isUpdate = Boolean(cabin);
+  const { mutate, isPending } = useCreateOrUpdateCabin(isUpdate);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({ defaultValues: isEdit ? cabin : {} }); //defaultValues 是一个 object, 用于填充同名的 form field
+  } = useForm({ defaultValues: isUpdate ? cabin : {} }); //defaultValues 是一个 object, 用于填充同名的 form field
 
-  const queryClient = useQueryClient();
-  const { mutate, isPending } = useMutation({
-    mutationFn: createOrUpdateCabin,
-    onSuccess: (cabin) => {
-      toast.success(
-        `successfully ${isEdit ? "updated" : "created"} one cabin with id ${cabin.id} and name ${cabin.name}`,
-      );
-      queryClient.invalidateQueries({ queryKey: ["cabins"] });
-
-      // 重置表单
-      // 如果 useForm({defaultValues: xxxObj}), 那么 reset() 将按照 xxxObj 进行重置
-      // 如果不满意, 可以 reset(yyyObj), 此时将按照 yyyObj 进行重置
-      // 此时: 如果想重置 input with name 'name', 就 reset({name: ''})
-      reset(); 
-    },
-    // err 是 mutationFn 执行时产生的 error instance, 而不是 react-hook-form 校验时产生的 error
-    onError: (err) =>
-      toast.error(`oops! detected error with message ${err.message}`),
-  });
   // 注意: 下面的 onSubmit 是给 handleSubmit 调用的 callback, 其参数为 formDataObj, 而非 html onSubmit 所接收的 event
   function onSubmit(formDataObj) {
     console.log(`提交的表单数据为:`);
@@ -86,7 +66,7 @@ function CabinForm({ cabin }) {
     // mutate 第一个参数是 variables, 是一个 object, 会被传递给 mutationFn
     // mutate 第二个参数是 object (里面可以指定 onSuccess / onSettled / onError)
     let payload;
-    if (isEdit) {
+    if (isUpdate) {
       // 如果是 edit/update cabin, 由于 cabin form 中并没有 field 'id'
       // 因此这里需要将 id 塞进 formDataObj 如下:
       payload = { ...formDataObj, id: cabin.id };
@@ -97,7 +77,15 @@ function CabinForm({ cabin }) {
       console.log(`creating cabin with payload:`);
     }
     console.log(payload);
-    mutate(payload);
+    mutate(payload, {
+      onSuccess: () => {
+        // 重置表单
+        // 如果 useForm({defaultValues: xxxObj}), 那么 reset() 将按照 xxxObj 进行重置
+        // 如果不满意, 可以 reset(yyyObj), 此时将按照 yyyObj 进行重置
+        // 此时: 如果想重置 input with name 'name', 就 reset({name: ''})
+        reset();
+      },
+    });
   }
   function onError(errorObj) {
     console.log(`检测到的表达错误为:`);
@@ -270,7 +258,7 @@ function CabinForm({ cabin }) {
           id="image"
           accept="image/*"
           {...register("image", {
-            required: isEdit
+            required: isUpdate
               ? false // edit/update cabin 时, defaultValues 会填充 formDataObj.image, 但 field input 'image' 是没有值的, 无法通过校验
               : {
                   value: true,
@@ -285,7 +273,7 @@ function CabinForm({ cabin }) {
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button disabled={isPending}>{isEdit ? "Edit" : "Add"}</Button>
+        <Button disabled={isPending}>{isUpdate ? "Edit" : "Add"}</Button>
       </CabinFormRow>
     </Form>
   );
