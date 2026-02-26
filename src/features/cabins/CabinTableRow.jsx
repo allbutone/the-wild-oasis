@@ -4,6 +4,8 @@ import { useState } from "react";
 import CabinForm from "./CabinForm";
 import { useDelCabin } from "./useDelCabin";
 import toast from "react-hot-toast";
+import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import { useCreateOrUpdateCabin } from "./useCreateOrUpdateCabin";
 
 const StyledCabinTableRow = styled.div`
   display: grid;
@@ -69,7 +71,20 @@ const StyledCloseButton = styled.span`
 export default function CabinTableRow({ cabin }) {
   const [showForm, setShowForm] = useState(false); // 是否展示 cabin form 来 edit 某个 cabin row
   const { mutate, isDeleting } = useDelCabin();
+  const { mutate: createOrUpdate, isPending } = useCreateOrUpdateCabin();
 
+  const { id, name, maxCapacity, regularPrice, discount, description, image } = cabin;
+
+  function handleDuplicate() {
+    createOrUpdate({
+      name: `copy of ${cabin.name}`,
+      maxCapacity,
+      regularPrice,
+      discount,
+      description,
+      image,
+    });
+  }
   function handleDel() {
     mutate(cabin.id, {
       onError: (err) => {
@@ -92,23 +107,26 @@ export default function CabinTableRow({ cabin }) {
     <>
       <StyledCabinTableRow>
         {/* column1 */}
-        <Img src={cabin.image} />
+        <Img src={image} />
         {/* column2 */}
-        <Cabin>{`${cabin.id}-${cabin.name}`}</Cabin>
+        <Cabin>{`${id}-${name}`}</Cabin>
         {/* column3 */}
-        <div>{cabin.maxCapacity}</div>
+        <div>{maxCapacity}</div>
         {/* column4 */}
-        <Price>{formatCurrency(cabin.regularPrice)}</Price>
+        <Price>{formatCurrency(regularPrice)}</Price>
         {/* column5 */}
-        <Discount>{formatCurrency(cabin.discount)}</Discount>
+        <Discount>{formatCurrency(discount)}</Discount>
         {/* column6 */}
         {/* 只有 6 columns, 因此这两个 button 就只好合并到一个 column (由 div 充当) 中了 */}
         <div>
+          <button onClick={handleDuplicate} disabled={isPending}>
+            <HiSquare2Stack />
+          </button>
           <button onClick={handleDel} disabled={isDeleting}>
-            delete
+            <HiTrash />
           </button>
           <button onClick={() => setShowForm((showForm) => !showForm)}>
-            toggle edit form
+            <HiPencil />
           </button>
         </div>
       </StyledCabinTableRow>

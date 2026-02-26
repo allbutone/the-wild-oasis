@@ -72,32 +72,39 @@ export async function createOrUpdateCabin(cabin) {
 async function uploadFile(file) {
   // 替换 image name 中可能有的 '/', 防止 supabase 自动生成 subfolder
   // 如果确实需要将 image 存放在 bucket 下指定 subfolder 内, 那么 imagePath 内包含 '/' 是正常的
-  const imagePath = `${Math.random()}-${file.name}`.replace("/", ""); // 相对于 bucket root 的 path
+  const path = `${file.name}`.replace("/", ""); // 相对于 bucket root 的 path
 
-  const { data: fileData, error: imageError } = await supabase.storage
+  const { data, error } = await supabase.storage
     .from("cabin-images")
-    .upload(imagePath, file, {
-      cacheControl: "3600", // file 在 browser 和 supabase CDN 中缓存多久, 默认为 3600s (one hour)
-      upsert: false, // 如果 imagePath 对应的 file 已经存在, 不要覆盖, 而是直接报错
-    });
-  if (imageError) {
-    throw new Error(`failed to upload image due to:${imageError.message}`);
-  }
-  //fullPath: 带有 bucket root 的 path
-  console.log(`fileData.fullPath: ${fileData.fullPath}`); //cabin-images/0.3587953130386382-cabin-002.jpg
-  //path: 不带 bucket root 的 path
-  console.log(`fileData.path: ${fileData.path}`); //0.3587953130386382-cabin-002.jpg
+    .exists(path);
 
-  // 为 file 创建 signed url (带有效期的 url)
+  // 如果 path 对应的 file 不存在, 就上传
+  if (!data) {
+    const { data: fileData, error: imageError } = await supabase.storage
+      .from("cabin-images")
+      .upload(path, file, {
+        cacheControl: "3600", // file 在 browser 和 supabase CDN 中缓存多久, 默认为 3600s (one hour)
+        upsert: false, // 如果 imagePath 对应的 file 已经存在, 不要覆盖, 而是直接报错
+      });
+    if (imageError) {
+      throw new Error(`failed to upload image due to:${imageError.message}`);
+    }
+    //fullPath: 带有 bucket root 的 path
+    console.log(`fileData.fullPath: ${fileData.fullPath}`); //cabin-images/0.3587953130386382-cabin-002.jpg
+    //path: 不带 bucket root 的 path
+    console.log(`fileData.path: ${fileData.path}`); //0.3587953130386382-cabin-002.jpg
+  }
+
+  // 此时 file 一定存在, 为 file 创建 signed url (带有效期的 url)
   const { data: urlData, error: urlError } = await supabase.storage
     .from("cabin-images")
-    .createSignedUrl(fileData.path, 1 * 365 * 24 * 60 * 60); // 有效期 1 年, 单位: 秒
+    .createSignedUrl(path, 1 * 365 * 24 * 60 * 60); // 有效期 1 年, 单位: 秒
 
   if (urlError) {
     throw new Error(
-      `failed to retrieve signed url of file located at ${fileData.fullPath}`,
+      `failed to retrieve signed url of file located at ${path}`,
     );
   }
 
-  return { signedUrl: urlData.signedUrl, path: fileData.path };
+  return { signedUrl: urlData.signedUrl, path: path };
 }
