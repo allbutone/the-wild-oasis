@@ -49,7 +49,11 @@ function CabinForm({ cabin, onClose }) {
         // 如果不满意, 可以 reset(yyyObj), 此时将按照 yyyObj 进行重置
         // 此时: 如果想重置 input with name 'name', 就 reset({name: ''})
         reset();
-        onClose();
+
+        // 如果 CabinForm 并没有内嵌在 CabinModal 内, 就没有 close modal 的需求
+        // 此时就不需要提供 props 'onClose', 那么就没有执行 onClose() 的必要了
+        // 因此应将 onClose() 修改为 onClose?.()
+        onClose?.();
       },
     });
   }
@@ -236,7 +240,7 @@ function CabinForm({ cabin, onClose }) {
 
       <StyledFormRow>
         {/* type is an HTML attribute! */}
-        <Button variation="secondary" type="reset" onClick={onClose}>
+        <Button variation="secondary" type="reset" onClick={() => onClose?.()}>
           Cancel
         </Button>
         <Button disabled={isPending}>{isUpdate ? "Edit" : "Add"}</Button>
