@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 import BookingDataBox from "./BookingDataBox";
-import Row from "../../ui/Row";
+import StyledRow from "../../ui/Row";
 import Heading from "../../ui/Heading";
 import Tag from "../../ui/Tag";
 import ButtonGroup from "../../ui/ButtonGroup";
@@ -30,13 +30,13 @@ function BookingDetail() {
 
   return (
     <>
-      <Row type="horizontal">
+      <StyledRow type="horizontal">
         <HeadingGroup>
           <Heading as="h1">Booking #X</Heading>
           <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
         </HeadingGroup>
         <ButtonText onClick={moveBack}>&larr; Back</ButtonText>
-      </Row>
+      </StyledRow>
 
       <BookingDataBox booking={booking} />
 

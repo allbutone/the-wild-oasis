@@ -2,8 +2,8 @@ import { useState } from "react";
 
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
-import Form from "../../ui/Form";
-import FormRow from "../../ui/FormRow";
+import StyledForm from "../../ui/StyledForm";
+import FormRow from "../../ui/StyledFormRow";
 import Input from "../../ui/Input";
 
 import { useUser } from "./useUser";
@@ -25,7 +25,7 @@ function UpdateUserDataForm() {
   }
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <StyledForm onSubmit={handleSubmit}>
       <FormRow label="Email address">
         <Input value={email} disabled />
       </FormRow>
@@ -50,7 +50,7 @@ function UpdateUserDataForm() {
         </Button>
         <Button>Update account</Button>
       </FormRow>
-    </Form>
+    </StyledForm>
   );
 }
 

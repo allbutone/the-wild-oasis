@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 
-const Form = styled.form`
+const StyledForm = styled.form`
   ${(props) =>
     props.type !== "modal" &&
     css`
@@ -22,4 +22,4 @@ const Form = styled.form`
   font-size: 1.4rem;
 `;
 
-export default Form;
+export default StyledForm;

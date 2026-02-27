@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Button from "../../ui/Button";
-import Form from "../../ui/Form";
+import StyledForm from "../../ui/StyledForm";
 import Input from "../../ui/Input";
 import FormRowVertical from "../../ui/FormRowVertical";
 
@@ -11,7 +11,7 @@ function LoginForm() {
   function handleSubmit() {}
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <StyledForm onSubmit={handleSubmit}>
       <FormRowVertical label="Email address">
         <Input
           type="email"
@@ -34,7 +34,7 @@ function LoginForm() {
       <FormRowVertical>
         <Button size="large">Login</Button>
       </FormRowVertical>
-    </Form>
+    </StyledForm>
   );
 }
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Heading from "../ui/Heading";
-import Row from "../ui/Row";
+import StyledRow from "../ui/Row";
 import { getCabins } from "../services/apiCabins.js";
 import CabinTable from "../features/cabins/CabinTable";
 import Button from "../ui/Button";
@@ -13,15 +13,15 @@ function Cabins() {
   // }, []);
   return (
     <>
-      <Row type="horizontal">
+      <StyledRow type="horizontal">
         <Heading as="h1">All cabins</Heading>
         <p>filter / sort</p>
-      </Row>
-      <Row type="vertical">
+      </StyledRow>
+      <StyledRow type="vertical">
         <CabinTable />
         <Button onClick={() => setShowForm(s => !s)}>toggle add form</Button>
         {showForm && <CabinForm />}
-      </Row>
+      </StyledRow>
     </>
   );
 }

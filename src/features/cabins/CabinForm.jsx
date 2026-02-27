@@ -1,49 +1,14 @@
-import styled from "styled-components";
-
 import Input from "../../ui/Input";
-import Form from "../../ui/Form";
+import StyledForm from "../../ui/StyledForm";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 import { useCreateOrUpdateCabin } from "./useCreateOrUpdateCabin";
-
-const CabinFormRow = styled.div`
-  display: grid;
-  align-items: center;
-  grid-template-columns: 24rem 1fr 1.2fr;
-  gap: 2.4rem;
-
-  padding: 1.2rem 0;
-
-  &:first-child {
-    padding-top: 0;
-  }
-
-  &:last-child {
-    padding-bottom: 0;
-  }
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--color-grey-100);
-  }
-
-  &:has(button) {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1.2rem;
-  }
-`;
-
-const Label = styled.label`
-  font-weight: 500;
-`;
-
-const Error = styled.span`
-  font-size: 1.4rem;
-  color: var(--color-red-700);
-`;
+import { StyledFormLabel } from "../../ui/StyledFormLabel";
+import { StyledFormError } from "../../ui/StyledFormError";
+import { StyledFormRow } from "../../ui/StyledFormRow";
 
 //CabinForm 同时用于 create cabin 和 edit/update cabin
 function CabinForm({ cabin }) {
@@ -92,9 +57,9 @@ function CabinForm({ cabin }) {
     console.log(errorObj);
   }
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
-      <CabinFormRow>
-        <Label htmlFor="name">Name</Label>
+    <StyledForm onSubmit={handleSubmit(onSubmit, onError)}>
+      <StyledFormRow>
+        <StyledFormLabel htmlFor="name">Name</StyledFormLabel>
         {/* 参考 https://react-hook-form.com/docs/useform/register 可知: */}
         {/* required 的值可以是 true/false, 也可以是 {value: true/false, message: 'xxx'} */}
         {/* 其实前者就是后者的一种特例, 相当于 {value: true/false, message: ''} */}
@@ -121,12 +86,12 @@ function CabinForm({ cabin }) {
         <ErrorMessage
           errors={errors}
           name="name"
-          render={({ message }) => <Error>{message}</Error>}
+          render={({ message }) => <StyledFormError>{message}</StyledFormError>}
         />
-      </CabinFormRow>
+      </StyledFormRow>
 
-      <CabinFormRow>
-        <Label htmlFor="maxCapacity">Maximum capacity</Label>
+      <StyledFormRow>
+        <StyledFormLabel htmlFor="maxCapacity">Maximum capacity</StyledFormLabel>
         <Input
           type="number"
           defaultValue={1}
@@ -153,12 +118,12 @@ function CabinForm({ cabin }) {
         <ErrorMessage
           errors={errors}
           name="maxCapacity"
-          render={(errorObj) => <Error>{errorObj.message}</Error>}
+          render={(errorObj) => <StyledFormError>{errorObj.message}</StyledFormError>}
         />
-      </CabinFormRow>
+      </StyledFormRow>
 
-      <CabinFormRow>
-        <Label htmlFor="regularPrice">Regular price</Label>
+      <StyledFormRow>
+        <StyledFormLabel htmlFor="regularPrice">Regular price</StyledFormLabel>
         <Input
           type="number"
           {...register("regularPrice", {
@@ -180,12 +145,12 @@ function CabinForm({ cabin }) {
         <ErrorMessage
           errors={errors}
           name="regularPrice"
-          render={({ message }) => <Error>{message}</Error>}
+          render={({ message }) => <StyledFormError>{message}</StyledFormError>}
         />
-      </CabinFormRow>
+      </StyledFormRow>
 
-      <CabinFormRow>
-        <Label htmlFor="discount">Discount</Label>
+      <StyledFormRow>
+        <StyledFormLabel htmlFor="discount">Discount</StyledFormLabel>
         <Input
           type="number"
           defaultValue={0}
@@ -229,12 +194,12 @@ function CabinForm({ cabin }) {
         <ErrorMessage
           errors={errors}
           name="discount"
-          render={({ message }) => <Error>{message}</Error>}
+          render={({ message }) => <StyledFormError>{message}</StyledFormError>}
         />
-      </CabinFormRow>
+      </StyledFormRow>
 
-      <CabinFormRow>
-        <Label htmlFor="description">Description for website</Label>
+      <StyledFormRow>
+        <StyledFormLabel htmlFor="description">Description for website</StyledFormLabel>
         <Textarea
           type="number"
           defaultValue=""
@@ -248,12 +213,12 @@ function CabinForm({ cabin }) {
         <ErrorMessage
           errors={errors}
           name="description"
-          render={({ message }) => <Error>{message}</Error>}
+          render={({ message }) => <StyledFormError>{message}</StyledFormError>}
         />
-      </CabinFormRow>
+      </StyledFormRow>
 
-      <CabinFormRow>
-        <Label htmlFor="image">Cabin photo</Label>
+      <StyledFormRow>
+        <StyledFormLabel htmlFor="image">Cabin photo</StyledFormLabel>
         <FileInput
           id="image"
           accept="image/*"
@@ -266,16 +231,16 @@ function CabinForm({ cabin }) {
                 },
           })}
         />
-      </CabinFormRow>
+      </StyledFormRow>
 
-      <CabinFormRow>
+      <StyledFormRow>
         {/* type is an HTML attribute! */}
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
         <Button disabled={isPending}>{isUpdate ? "Edit" : "Add"}</Button>
-      </CabinFormRow>
-    </Form>
+      </StyledFormRow>
+    </StyledForm>
   );
 }
 

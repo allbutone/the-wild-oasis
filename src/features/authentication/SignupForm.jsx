@@ -1,13 +1,13 @@
 import Button from "../../ui/Button";
-import Form from "../../ui/Form";
-import FormRow from "../../ui/FormRow";
+import StyledForm from "../../ui/StyledForm";
+import FormRow from "../../ui/StyledFormRow";
 import Input from "../../ui/Input";
 
 // Email regex: /\S+@\S+\.\S+/
 
 function SignupForm() {
   return (
-    <Form>
+    <StyledForm>
       <FormRow label="Full name" error={""}>
         <Input type="text" id="fullName" />
       </FormRow>
@@ -31,7 +31,7 @@ function SignupForm() {
         </Button>
         <Button>Create new user</Button>
       </FormRow>
-    </Form>
+    </StyledForm>
   );
 }
 
