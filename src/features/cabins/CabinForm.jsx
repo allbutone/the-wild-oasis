@@ -11,7 +11,7 @@ import { StyledFormError } from "../../ui/StyledFormError";
 import { StyledFormRow } from "../../ui/StyledFormRow";
 
 //CabinForm 同时用于 create cabin 和 edit/update cabin
-function CabinForm({ cabin }) {
+function CabinForm({ cabin, onClose }) {
   // 如果传入了 props 'cabin', 那么说明是要 edit/update cabin
   const isUpdate = Boolean(cabin);
   const { mutate, isPending } = useCreateOrUpdateCabin(isUpdate);
@@ -49,6 +49,7 @@ function CabinForm({ cabin }) {
         // 如果不满意, 可以 reset(yyyObj), 此时将按照 yyyObj 进行重置
         // 此时: 如果想重置 input with name 'name', 就 reset({name: ''})
         reset();
+        onClose();
       },
     });
   }
@@ -235,7 +236,7 @@ function CabinForm({ cabin }) {
 
       <StyledFormRow>
         {/* type is an HTML attribute! */}
-        <Button variation="secondary" type="reset">
+        <Button variation="secondary" type="reset" onClick={onClose}>
           Cancel
         </Button>
         <Button disabled={isPending}>{isUpdate ? "Edit" : "Add"}</Button>

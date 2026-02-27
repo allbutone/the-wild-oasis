@@ -1,3 +1,4 @@
+import { HiXMark } from "react-icons/hi2";
 import styled from "styled-components";
 
 const StyledModal = styled.div`
@@ -12,7 +13,7 @@ const StyledModal = styled.div`
   transition: all 0.5s;
 `;
 
-const Overlay = styled.div`
+const StyledOverlay = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -24,7 +25,7 @@ const Overlay = styled.div`
   transition: all 0.5s;
 `;
 
-const Button = styled.button`
+const StyledCloseButton = styled.button`
   background: none;
   border: none;
   padding: 0.4rem;
@@ -48,3 +49,17 @@ const Button = styled.button`
     color: var(--color-grey-500);
   }
 `;
+
+// Modal 里面可以内嵌任何内容, 例如常见的 form, 此时 form 就是 props 'children'
+export default function Modal({ children, onClose }) {
+  return (
+    <StyledOverlay>
+      <StyledModal>
+        <StyledCloseButton onClick={onClose}>
+          <HiXMark />
+        </StyledCloseButton>
+        {children}
+      </StyledModal>
+    </StyledOverlay>
+  );
+}
