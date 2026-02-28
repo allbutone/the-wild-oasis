@@ -1,3 +1,5 @@
+import { cloneElement, createContext, useContext, useState } from "react";
+import { createPortal } from "react-dom";
 import { HiXMark } from "react-icons/hi2";
 import styled from "styled-components";
 
@@ -50,9 +52,17 @@ const StyledCloseButton = styled.button`
   }
 `;
 
-// Modal 里面可以内嵌任何内容, 例如常见的 form, 此时 form 就是 props 'children'
-export default function Modal({ children, onClose }) {
-  return (
+// Modal_v1: 
+// 缺点: 
+// Modal 的开关状态在 Modal 外定义
+// 但 Modal 内也有触发 Modal 开关的地方
+// 为此外界还得将 props 'onClose' 传递给 Modal 才能修改状态
+/* export default function Modal({ children, onClose }) {
+  // createPortal() 的作用: 
+  // component 仍在 react component tree 中
+  // 但对应的 dom element 则出现在指定元素下
+  // 这样 component 的样式不会受到 react component tree 中上级元素的影响
+  return createPortal(
     <StyledOverlay>
       <StyledModal>
         <StyledCloseButton onClick={onClose}>
@@ -60,6 +70,87 @@ export default function Modal({ children, onClose }) {
         </StyledCloseButton>
         {children}
       </StyledModal>
-    </StyledOverlay>
+    </StyledOverlay>,
+    document.body,
+  );
+} */
+//
+// Modal_v2:
+// 借助 compound component 来重构
+// 实现: 在 Modal 内维护 Modal 开关状态, 且在 Modal 内触发 Modal 的开关
+//
+// 按照 compound component 重构时, 这么做会轻松很多:
+// 先写出你所希望的 Modal 的最终使用方式(如下), 再借助 Context API 去实现它
+//   <Modal>
+//     {/* modal launch button 默认显示 */}
+//     {/* modal launch button 负责 launch modal content */}
+//     <Modal.LaunchButton>
+//       {/* custom modal launch button */}
+//       <Button>add cabin</Button>
+//     </Modal.LaunchButton>
+//     {/* modal content 默认不显示 */}
+//     <Modal.Content>
+//       {/* custom modal content */}
+//       <CabinForm />
+//     </Modal.Content>
+//   </Modal>
+//
+// 照着上述预期的使用方式, 借助 Context API 来实现如下:
+const ModalContext = createContext();
+export default function Modal({ children }) {
+  // 记录 modal content 的展示状态, 默认不展示
+  const [showContent, setShowContent] = useState(false);
+
+  return (
+    // 将 showContent 和 setShowContent 放入 context 内, 以便 children 可按需:
+    // 1. 根据 context 内的 showContent 展示/隐藏 modal content
+    // 2. 使用 context 内的 setShowContent 来 toggle state `showContent`
+    <ModalContext.Provider value={{ showContent, setShowContent }}>
+      {children}
+    </ModalContext.Provider>
   );
 }
+
+// children: custom launch button
+function LaunchButton({ children }) {
+  const { setShowContent } = useContext(ModalContext);
+
+  // 下面的问题是: 
+  // 无法为 children 指定 props 'onClick' 来 launch modal content
+  // return children;
+  // 但可借助 cloneElement 实现: 为 children "添加" props 'onClick' 如下
+  return cloneElement(children, { onClick: () => setShowContent(true) });
+}
+Modal.LaunchButton = LaunchButton;//为了使用方便
+
+// children: custom modal content
+function Content({ children }) {
+  const { showContent, setShowContent } = useContext(ModalContext);
+
+  function closeModalContent() {
+    setShowContent(false);
+  }
+  return (
+    showContent &&
+    createPortal(
+      <StyledOverlay>
+        <StyledModal>
+          {/* modal window 右上角的关闭按钮 */}
+          <StyledCloseButton onClick={closeModalContent}>
+            <HiXMark />
+          </StyledCloseButton>
+
+          {/* 如果 children 内也有需要触发 close modal content 的地方*/}
+          {/* 就需要将 closeModalContent 作为 props 传递到 children 内 */}
+          {/* 但问题时: 无法直接为 children 添加 props */} 
+          {/* {children} */}
+          {/* 就只好通过 cloneElement 来 workaround 如下:  */}
+          {/* props 'onClose' 是具体 children 组件定义的 */}
+          {cloneElement(children, { onClose: closeModalContent })}
+        </StyledModal>
+      </StyledOverlay>,
+      document.body,
+    )
+  );
+}
+Modal.Content = Content;//为了使用方便

@@ -1,18 +1,23 @@
-import { useState } from "react";
 import CabinForm from "../features/cabins/CabinForm";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 
 export default function CabinModal() {
-  const [showCabinModal, setShowCabinModal] = useState(false);
   return (
-    <div>
-      <Button onClick={() => setShowCabinModal((s) => !s)}>add cabin</Button>
-      {showCabinModal && (
-        <Modal onClose={() => setShowCabinModal(false)}>
-          <CabinForm onClose={() => setShowCabinModal(false)}/>
-        </Modal>
-      )}
-    </div>
+    <>
+      <Modal>
+        {/* modal launch button 默认显示 */}
+        {/* modal launch button 负责 launch modal content */}
+        <Modal.LaunchButton>
+          {/* custom modal launch button */}
+          <Button variation="primary">add cabin</Button>
+        </Modal.LaunchButton>
+        {/* modal content 默认不显示 */}
+        <Modal.Content>
+          {/* custom modal content */}
+          <CabinForm />
+        </Modal.Content>
+      </Modal>
+    </>
   );
 }
