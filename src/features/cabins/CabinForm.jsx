@@ -42,6 +42,7 @@ function CabinForm({ cabin, onClose }) {
       console.log(`creating cabin with payload:`);
     }
     console.log(payload);
+    // mutate 最终调用 createOrUpdateCabin 来 save 或 update 
     mutate(payload, {
       onSuccess: () => {
         // 重置表单

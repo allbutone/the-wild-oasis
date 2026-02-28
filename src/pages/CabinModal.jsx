@@ -3,7 +3,7 @@ import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import CabinTable from "../features/cabins/CabinTable";
 
-export default function CabinModal({ cabin }) {
+export default function CabinModal() {
   return (
     <div>
       <Modal>
@@ -18,18 +18,21 @@ export default function CabinModal({ cabin }) {
           {/* custom modal content */}
           {/* props 'cabin' 需要传入 */}
           {/* props 'onClose' 不需要传入, 因为 Modal.Content 内部通过 cloneElement 为 CabinForm 注入了 onClose, props 'onClose' 是有值的 */}
-          <CabinForm cabin={cabin} />
+          <CabinForm />
         </Modal.Content>
 
         {/* Modal 支持指定多组  */}
         {/* modal launch button + modal content */}
         {/* shows: which modal content to show */}
+        {/* 测试如下: */}
+        {/* 
         <Modal.LaunchButton shows="cabin-table">
           <Button variation="primary">show cabins</Button>
         </Modal.LaunchButton>
         <Modal.Content name="cabin-table">
           <CabinTable />
-        </Modal.Content>
+        </Modal.Content> 
+        */}
       </Modal>
     </div>
   );

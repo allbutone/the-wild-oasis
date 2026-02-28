@@ -6,6 +6,7 @@ import { useDelCabin } from "./useDelCabin";
 import toast from "react-hot-toast";
 import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import { useCreateOrUpdateCabin } from "./useCreateOrUpdateCabin";
+import Modal from "../../ui/Modal";
 
 const StyledCabinTableRow = styled.div`
   display: grid;
@@ -69,11 +70,11 @@ const StyledCloseButton = styled.span`
 `;
 
 export default function CabinTableRow({ cabin }) {
-  const [showForm, setShowForm] = useState(false); // 是否展示 cabin form 来 edit 某个 cabin row
   const { mutate, isDeleting } = useDelCabin();
   const { mutate: createOrUpdate, isPending } = useCreateOrUpdateCabin();
 
-  const { id, name, maxCapacity, regularPrice, discount, description, image } = cabin;
+  const { id, name, maxCapacity, regularPrice, discount, description, image } =
+    cabin;
 
   function handleDuplicate() {
     createOrUpdate({
@@ -104,33 +105,44 @@ export default function CabinTableRow({ cabin }) {
 
   return (
     // StyledCabinTableRow 通过 6 column 展示 6 fields of cabin 如下
-    <>
-      <StyledCabinTableRow>
-        {/* column1 */}
-        <Img src={image} />
-        {/* column2 */}
-        <Cabin>{`${id}-${name}`}</Cabin>
-        {/* column3 */}
-        <div>{maxCapacity}</div>
-        {/* column4 */}
-        <Price>{formatCurrency(regularPrice)}</Price>
-        {/* column5 */}
-        <Discount>{formatCurrency(discount)}</Discount>
-        {/* column6 */}
-        {/* 只有 6 columns, 因此这两个 button 就只好合并到一个 column (由 div 充当) 中了 */}
-        <div>
-          <button onClick={handleDuplicate} disabled={isPending}>
-            <HiSquare2Stack />
-          </button>
-          <button onClick={handleDel} disabled={isDeleting}>
-            <HiTrash />
-          </button>
-          <button onClick={() => setShowForm((showForm) => !showForm)}>
-            <HiPencil />
-          </button>
-        </div>
-      </StyledCabinTableRow>
-      {showForm && <CabinForm cabin={cabin} />}
-    </>
+    <StyledCabinTableRow>
+      {/* column1 */}
+      <Img src={image} />
+      {/* column2 */}
+      <Cabin>{`${id}-${name}`}</Cabin>
+      {/* column3 */}
+      <div>{maxCapacity}</div>
+      {/* column4 */}
+      <Price>{formatCurrency(regularPrice)}</Price>
+      {/* column5 */}
+      <Discount>{formatCurrency(discount)}</Discount>
+      {/* column6 */}
+      {/* 只有 6 columns, 因此这两个 button 就只好合并到一个 column (由 div 充当) 中了 */}
+      <div>
+        <button onClick={handleDuplicate} disabled={isPending}>
+          <HiSquare2Stack />
+        </button>
+        <Modal>
+          <Modal.LaunchButton>
+            <button>
+              <HiPencil />
+            </button>
+          </Modal.LaunchButton>
+          <Modal.Content>
+            {/* 传入 props 'cabin', CabinForm 内的 form 在提交时会执行 update 操作 */}
+            {/* 不传 props 'cabin', CabinForm 内的 form 在提交时会执行 save 操作 */}
+            {/* Modal.Content 为自己的 children (即这里的 CabinForm) 注入了 props 'onClose' 用于关闭 modal */}
+            {/* 在 CabinForm 内, 如果有 props 'onClose', 会这么处理: */}
+            {/* 1. form submit 后, 会执行 onClose() */}
+            {/* 2. form cancel 会直接执行 onClose() */}
+            <CabinForm cabin={cabin} />
+          </Modal.Content>
+        </Modal>
+
+        <button onClick={handleDel} disabled={isDeleting}>
+          <HiTrash />
+        </button>
+      </div>
+    </StyledCabinTableRow>
   );
 }
