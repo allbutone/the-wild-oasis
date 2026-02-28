@@ -52,8 +52,8 @@ const StyledCloseButton = styled.button`
   }
 `;
 
-// Modal_v1: 
-// 缺点: 
+// Modal_v1:
+// 缺点:
 // Modal 的开关状态在 Modal 外定义
 // 但 Modal 内也有触发 Modal 开关的地方
 // 为此外界还得将 props 'onClose' 传递给 Modal 才能修改状态
@@ -98,40 +98,45 @@ const StyledCloseButton = styled.button`
 // 照着上述预期的使用方式, 借助 Context API 来实现如下:
 const ModalContext = createContext();
 export default function Modal({ children }) {
-  // 记录 modal content 的展示状态, 默认不展示
-  const [showContent, setShowContent] = useState(false);
+  // 记录 current content 是哪个, 默认为 '', 表示没有 content 要展示
+  const [currentContentName, setCurrentContentName] = useState('');
 
   return (
     // 将 showContent 和 setShowContent 放入 context 内, 以便 children 可按需:
     // 1. 根据 context 内的 showContent 展示/隐藏 modal content
     // 2. 使用 context 内的 setShowContent 来 toggle state `showContent`
-    <ModalContext.Provider value={{ showContent, setShowContent }}>
+    <ModalContext.Provider
+      value={{
+        currentContentName,
+        setCurrentContentName,
+      }}
+    >
       {children}
     </ModalContext.Provider>
   );
 }
 
 // children: custom launch button
-function LaunchButton({ children }) {
-  const { setShowContent } = useContext(ModalContext);
+function LaunchButton({ children, shows }) {
+  const { setCurrentContentName } = useContext(ModalContext);
 
-  // 下面的问题是: 
+  // 下面的问题是:
   // 无法为 children 指定 props 'onClick' 来 launch modal content
   // return children;
   // 但可借助 cloneElement 实现: 为 children "添加" props 'onClick' 如下
-  return cloneElement(children, { onClick: () => setShowContent(true) });
+  return cloneElement(children, { onClick: () => setCurrentContentName(shows) });
 }
-Modal.LaunchButton = LaunchButton;//为了使用方便
+Modal.LaunchButton = LaunchButton; //为了使用方便
 
 // children: custom modal content
-function Content({ children }) {
-  const { showContent, setShowContent } = useContext(ModalContext);
+function Content({ children, name }) {
+  const { currentContentName, setCurrentContentName } = useContext(ModalContext);
 
   function closeModalContent() {
-    setShowContent(false);
+    setCurrentContentName('');
   }
   return (
-    showContent &&
+    name === currentContentName &&
     createPortal(
       <StyledOverlay>
         <StyledModal>
@@ -142,10 +147,9 @@ function Content({ children }) {
 
           {/* 如果 children 内也有需要触发 close modal content 的地方*/}
           {/* 就需要将 closeModalContent 作为 props 传递到 children 内 */}
-          {/* 但问题时: 无法直接为 children 添加 props */} 
+          {/* 但问题时: 无法直接为 children 添加 props */}
           {/* {children} */}
-          {/* 就只好通过 cloneElement 来 workaround 如下:  */}
-          {/* props 'onClose' 是具体 children 组件定义的 */}
+          {/* 就只好通过 cloneElement 将 props 'onClose' 注入到 children 对应的组件中  */}
           {cloneElement(children, { onClose: closeModalContent })}
         </StyledModal>
       </StyledOverlay>,
@@ -153,4 +157,4 @@ function Content({ children }) {
     )
   );
 }
-Modal.Content = Content;//为了使用方便
+Modal.Content = Content; //为了使用方便
