@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import { useCreateOrUpdateCabin } from "./useCreateOrUpdateCabin";
 import Modal from "../../ui/Modal";
+import ConfirmDelete from "../../ui/ConfirmDelete";
 
 const StyledCabinTableRow = styled.div`
   display: grid;
@@ -87,6 +88,8 @@ export default function CabinTableRow({ cabin }) {
     });
   }
   function handleDel() {
+    //  根据文档: https://tanstack.com/query/v4/docs/framework/react/reference/useMutation
+    //  mutate(variabled, options) 返回值为 void, 并没有返回想要的 promise
     mutate(cabin.id, {
       onError: (err) => {
         // toast.error(`删除失败, 报错信息是: ${err.message}`);
@@ -139,9 +142,22 @@ export default function CabinTableRow({ cabin }) {
           </Modal.Content>
         </Modal>
 
-        <button onClick={handleDel} disabled={isDeleting}>
-          <HiTrash />
-        </button>
+        <Modal>
+          <Modal.LaunchButton>
+            <button>
+              <HiTrash />
+            </button>
+          </Modal.LaunchButton>
+          <Modal.Content>
+            {/* ConfirmDelete 是 starter code 提供的 */}
+            {/* Modal.Content 为 children (即这里的 ConfirmDelete) 注入了 props 'onClose' 用于关闭 Modal, ConfirmDelete 内可以按需调用 */}
+            {/* 按理说, 应该将 handleDel 挪到 ConfirmDelete 内, 这样当 user confirm 后, ConfirmDelete 会执行 handleDel() */}
+            {/* handlDel 所调用的 mutate, 其 onSucess 内可以 onClose(), 就可以实现 delete cabin -> close modal 的顺序执行 */}
+            {/* 不过, 观察后发现, 其实不需要这么做, 因为 user confirm 后, 执行 handleDel() 后, cabin row 不存在了 */}
+            {/* 其内的 Modal 也就随之消失, 实现了 "Modal 在 delete cabin 后自动关闭" 的效果 */}
+            <ConfirmDelete onConfirm={handleDel} disabled={isDeleting}/>
+          </Modal.Content>
+        </Modal>
       </div>
     </StyledCabinTableRow>
   );
