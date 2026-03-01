@@ -9,7 +9,7 @@ export default function CabinModal() {
       <Modal>
         {/* modal launch button 默认显示 */}
         {/* modal launch button 负责 launch modal content */}
-        <Modal.LaunchButton shows="cabin-form">
+        <Modal.LaunchButton launches="cabin-form">
           {/* custom modal launch button */}
           <Button variation="primary">add cabin</Button>
         </Modal.LaunchButton>

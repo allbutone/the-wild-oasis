@@ -126,12 +126,12 @@ export default function CabinTableRow({ cabin }) {
           <HiSquare2Stack />
         </button>
         <Modal>
-          <Modal.LaunchButton>
+          <Modal.LaunchButton launches="cabin-form">
             <button>
               <HiPencil />
             </button>
           </Modal.LaunchButton>
-          <Modal.Content>
+          <Modal.Content name="cabin-form">
             {/* 传入 props 'cabin', CabinForm 内的 form 在提交时会执行 update 操作 */}
             {/* 不传 props 'cabin', CabinForm 内的 form 在提交时会执行 save 操作 */}
             {/* Modal.Content 为自己的 children (即这里的 CabinForm) 注入了 props 'onClose' 用于关闭 modal */}
@@ -140,15 +140,13 @@ export default function CabinTableRow({ cabin }) {
             {/* 2. form cancel 会直接执行 onClose() */}
             <CabinForm cabin={cabin} />
           </Modal.Content>
-        </Modal>
 
-        <Modal>
-          <Modal.LaunchButton>
+          <Modal.LaunchButton launches="cabin-delete-confirm">
             <button>
               <HiTrash />
             </button>
           </Modal.LaunchButton>
-          <Modal.Content>
+          <Modal.Content name="cabin-delete-confirm">
             {/* ConfirmDelete 是 starter code 提供的 */}
             {/* Modal.Content 为 children (即这里的 ConfirmDelete) 注入了 props 'onClose' 用于关闭 Modal, ConfirmDelete 内可以按需调用 */}
             {/* 按理说, 应该将 handleDel 挪到 ConfirmDelete 内, 这样当 user confirm 后, ConfirmDelete 会执行 handleDel() */}
