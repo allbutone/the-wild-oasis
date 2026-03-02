@@ -132,7 +132,8 @@ function LaunchButton({ children, launches }) {
   // return children;
   // 但可借助 cloneElement 实现: 为 children "添加" props 'onClick' 如下
   return cloneElement(children, {
-    onClick: (e) => {
+    onClick: () => {
+      console.log(`modal launches button of ${launches} clicked!`);
       setCurrentContentName(launches);
       // e.stopPropagation();
     },

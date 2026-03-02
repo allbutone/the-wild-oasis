@@ -3,6 +3,7 @@ import Spinner from "../../ui/Spinner.jsx";
 import toast from "react-hot-toast";
 import { useCabins } from "./useCabins.js";
 import Table from "../../ui/Table.jsx";
+import Menus from "../../ui/Menus.jsx";
 
 export default function CabinTable() {
   const { isLoading, data, isError, error } = useCabins();
@@ -41,27 +42,27 @@ export default function CabinTable() {
           的值 '0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;' 存储到 context 中 
       */}
       {/* 实现如下效果: */}
-      <Table columns={'0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;' }>
-        <Table.Header>
-          <div></div>
-          <div>cabin_name</div>
-          <div>capacity</div>
-          <div>price</div>
-          <div>discount</div>
-          <div></div>
-        </Table.Header>
-        <Table.Body
-          data={data}
-          // 测试 data 为空时, 是否展示 <Empty />
-          // data={[]} 
-          render={(cabin) => (
-            <CabinTableRow cabin={cabin} key={cabin.id} />
-          )}
-        />
-        <Table.Footer>
-          <span>this is table footer for test purpose</span>
-        </Table.Footer>
-      </Table>
+      <Menus>
+        <Table columns={"0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;"}>
+          <Table.Header>
+            <div></div>
+            <div>cabin_name</div>
+            <div>capacity</div>
+            <div>price</div>
+            <div>discount</div>
+            <div></div>
+          </Table.Header>
+          <Table.Body
+            data={data}
+            // 测试 data 为空时, 是否展示 <Empty />
+            // data={[]}
+            render={(cabin) => <CabinTableRow cabin={cabin} key={cabin.id} />}
+          />
+          <Table.Footer>
+            <span>this is table footer for test purpose</span>
+          </Table.Footer>
+        </Table>
+      </Menus>
     </>
   );
 }

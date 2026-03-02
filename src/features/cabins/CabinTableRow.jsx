@@ -3,11 +3,17 @@ import { formatCurrency } from "../../utils/helpers";
 import CabinForm from "./CabinForm";
 import { useDelCabin } from "./useDelCabin";
 import toast from "react-hot-toast";
-import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import {
+  HiEllipsisVertical,
+  HiPencil,
+  HiSquare2Stack,
+  HiTrash,
+} from "react-icons/hi2";
 import { useCreateOrUpdateCabin } from "./useCreateOrUpdateCabin";
 import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
 import Table from "../../ui/Table";
+import Menus from "../../ui/Menus";
 
 const Img = styled.img`
   display: block;
@@ -107,40 +113,49 @@ export default function CabinTableRow({ cabin }) {
       {/* column5 */}
       <Discount>{formatCurrency(discount)}</Discount>
       {/* column6 */}
-      {/* 只有 6 columns, 因此这两个 button 就只好合并到一个 column (由 div 充当) 中了 */}
+      {/* 只有 6 columns, 因此这些 buttons 就只好合并到一个 column 中了 */}
       <div>
-        <button onClick={handleDuplicate} disabled={isPending}>
-          <HiSquare2Stack />
-        </button>
+        <Menus.LaunchButton id={cabin.id}>
+          <HiEllipsisVertical />
+        </Menus.LaunchButton>
         <Modal>
-          <Modal.LaunchButton launches="cabin-form">
-            <button>
-              <HiPencil />
-            </button>
-          </Modal.LaunchButton>
+          <Menus.MenuList id={cabin.id}>
+            <Menus.Menu onClick={handleDuplicate}>
+              <HiSquare2Stack />
+              <span>copy</span>
+            </Menus.Menu>
+            {/* 使用 Menus.Menu 充当 Modal.LaunchButton 才能打开 Modal.Content */}
+            {/* 为此需要将 Menus.Menu 放在 Modal 下, 这样才能通过 ModalContext 切换 Modal.Content */}
+            <Modal.LaunchButton launches="cabin-form">
+              <Menus.Menu>
+                <HiPencil />
+                <span>edit</span>
+              </Menus.Menu>
+            </Modal.LaunchButton>
+            <Modal.LaunchButton launches="cabin-delete-confirm">
+              <Menus.Menu>
+                <HiTrash />
+                <span>delete</span>
+              </Menus.Menu>
+            </Modal.LaunchButton>
+          </Menus.MenuList>
           <Modal.Content name="cabin-form">
             {/* 传入 props 'cabin', CabinForm 内的 form 在提交时会执行 update 操作 */}
             {/* 不传 props 'cabin', CabinForm 内的 form 在提交时会执行 save 操作 */}
-            {/* Modal.Content 为自己的 children (即这里的 CabinForm) 注入了 props 'onClose' 用于关闭 modal */}
+            {/* Modal.Content 为自己的 children (即这里的 CabinForm) 注入了 props 'onClose' 用于关闭 Modal.Content */}
             {/* 在 CabinForm 内, 如果有 props 'onClose', 会这么处理: */}
             {/* 1. form submit 后, 会执行 onClose() */}
             {/* 2. form cancel 会直接执行 onClose() */}
             <CabinForm cabin={cabin} />
           </Modal.Content>
-
-          <Modal.LaunchButton launches="cabin-delete-confirm">
-            <button>
-              <HiTrash />
-            </button>
-          </Modal.LaunchButton>
           <Modal.Content name="cabin-delete-confirm">
             {/* ConfirmDelete 是 starter code 提供的 */}
-            {/* Modal.Content 为 children (即这里的 ConfirmDelete) 注入了 props 'onClose' 用于关闭 Modal, ConfirmDelete 内可以按需调用 */}
+            {/* Modal.Content 为 children (即这里的 ConfirmDelete) 注入了 props 'onClose' 用于关闭 Modal.Content, ConfirmDelete 内可以按需调用 */}
             {/* 按理说, 应该将 handleDel 挪到 ConfirmDelete 内, 这样当 user confirm 后, ConfirmDelete 会执行 handleDel() */}
             {/* handlDel 所调用的 mutate, 其 onSucess 内可以 onClose(), 就可以实现 delete cabin -> close modal 的顺序执行 */}
             {/* 不过, 观察后发现, 其实不需要这么做, 因为 user confirm 后, 执行 handleDel() 后, cabin row 不存在了 */}
             {/* 其内的 Modal 也就随之消失, 实现了 "Modal 在 delete cabin 后自动关闭" 的效果 */}
-            <ConfirmDelete onConfirm={handleDel} disabled={isDeleting}/>
+            <ConfirmDelete onConfirm={handleDel} disabled={isDeleting} />
           </Modal.Content>
         </Modal>
       </div>
