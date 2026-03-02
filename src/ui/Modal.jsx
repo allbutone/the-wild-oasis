@@ -147,7 +147,8 @@ function Content({ children, name }) {
 
   const ref = useRef();
 
-  //Modal.Content mount/init-render 时, 添加对应的 event listener, 实现: click outside of modal -> close modal
+  //Modal.Content mount/init-render 时, 添加对应的 event listener
+  //实现: click outside of modal -> close modal
   useEffect(() => {
     console.log("run setup fn to add event listener");
     //setup fn

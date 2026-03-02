@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
-import { useState } from "react";
 import CabinForm from "./CabinForm";
 import { useDelCabin } from "./useDelCabin";
 import toast from "react-hot-toast";
@@ -8,18 +7,7 @@ import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import { useCreateOrUpdateCabin } from "./useCreateOrUpdateCabin";
 import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
-
-const StyledCabinTableRow = styled.div`
-  display: grid;
-  grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
-  column-gap: 2.4rem;
-  align-items: center;
-  padding: 1.4rem 2.4rem;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--color-grey-100);
-  }
-`;
+import Table from "../../ui/Table";
 
 const Img = styled.img`
   display: block;
@@ -107,8 +95,7 @@ export default function CabinTableRow({ cabin }) {
   }
 
   return (
-    // StyledCabinTableRow 通过 6 column 展示 6 fields of cabin 如下
-    <StyledCabinTableRow>
+    <Table.Row>
       {/* column1 */}
       <Img src={image} />
       {/* column2 */}
@@ -157,6 +144,6 @@ export default function CabinTableRow({ cabin }) {
           </Modal.Content>
         </Modal>
       </div>
-    </StyledCabinTableRow>
+    </Table.Row>
   );
 }

@@ -1,3 +1,4 @@
+import { createContext, useContext } from "react";
 import styled from "styled-components";
 
 const StyledTable = styled.div`
@@ -40,13 +41,14 @@ const StyledBody = styled.section`
   margin: 0.4rem 0;
 `;
 
-const Footer = styled.footer`
+const StyledFooter = styled.footer`
   background-color: var(--color-grey-50);
   display: flex;
   justify-content: center;
   padding: 1.2rem;
 
-  /* This will hide the footer when it contains no child elements. Possible thanks to the parent selector :has 🎉 */
+  /* This will hide the footer when it contains no child elements
+   * Possible thanks to the parent selector :has 🎉 */
   &:not(:has(*)) {
     display: none;
   }
@@ -58,3 +60,46 @@ const Empty = styled.p`
   text-align: center;
   margin: 2.4rem;
 `;
+
+const TableContext = createContext();
+// props 'columns' 的值为 `grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;` 中的 `0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;`
+export default function Table({ children, columns }) {
+  return (
+    <TableContext.Provider value={{ columns }}>
+      <StyledTable>{children}</StyledTable>
+    </TableContext.Provider>
+  );
+}
+
+function Header({ children }) {
+  const { columns } = useContext(TableContext);
+
+  //StyledHeader 继承自 CommonRow, 而 CommonRow 中用到了 props.columns, 因此需要指定 props 'columns' 如下:
+  return (
+    <StyledHeader columns={columns} as="header">
+      {children}
+    </StyledHeader>
+  );
+}
+Table.Header = Header;
+
+// render 定义了 data 中每行数据该如何 render, 而 Body 仅负责使用 map 进行迭代, render logic 交给调用者来定义
+function Body({ data, render }) {
+  if(!data?.length){ // 如果没有指定 props 'data' 或者 data.length 为 0 就展示 <Empty />
+    return <Empty>no rows to display here</Empty>
+  }
+  return <StyledBody>{data.map(render)}</StyledBody>;
+}
+Table.Body = Body;
+
+function Row({ children }) {
+  const { columns } = useContext(TableContext);
+  //StyledRow 继承自 CommonRow, 而 CommonRow 中用到了 props.columns, 因此需要指定 props 'columns' 如下:
+  return <StyledRow columns={columns}>{children}</StyledRow>;
+}
+Table.Row = Row;
+
+function Footer({ children }) {
+  return <StyledFooter>{children}</StyledFooter>;
+}
+Table.Footer = Footer;
