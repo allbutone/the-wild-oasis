@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { createPortal } from "react-dom";
 import styled from "styled-components";
 
 // 负责设定 currentId (决定了哪个 MenuList 被展示)
@@ -130,8 +131,10 @@ function MenuList({ children, id }) {
 
   // StyledMenuList 会使用 props.position 来给底层的 <ul> 定位
   return (
-    currentId === id && (
-      <StyledMenuList position={position}>{children}</StyledMenuList>
+    currentId === id &&
+    createPortal(
+      <StyledMenuList position={position}>{children}</StyledMenuList>,
+      document.body,
     )
   );
 }
