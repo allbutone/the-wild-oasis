@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
+import useClickOutsideRef from "../hooks/useClickOutsideRef";
 
 // 负责设定 currentId (决定了哪个 MenuList 被展示)
 const StyledLaunchButton = styled.button`
@@ -83,9 +84,23 @@ export default function Menus({ children }) {
   const [currentId, setCurrentId] = useState(""); // '' 表示默认不展示任何记录的 menu list
   const [position, setPosition] = useState(); // click 'menu laucnch button' 时, 获取到的位置信息, 稍后将基于该位置展示 menu list
 
+  function openMenuList(id) {
+    setCurrentId(id);
+  }
+
+  function closeAllMenuList() {
+    setCurrentId("");
+  }
+
   return (
     <MenuContext.Provider
-      value={{ currentId, setCurrentId, position, setPosition }}
+      value={{
+        currentId,
+        openMenuList,
+        closeAllMenuList,
+        position,
+        setPosition,
+      }}
     >
       {children}
     </MenuContext.Provider>
@@ -96,11 +111,11 @@ export default function Menus({ children }) {
 // props 'id': which menu list to launch/open
 // LaunchButton 负责设置 currentId, 如果某个 MenuList 的 id 与其匹配, 该 MenuList 就会被展示
 function LaunchButton({ children, id }) {
-  const { setCurrentId, setPosition } = useContext(MenuContext);
+  const { openMenuList, setPosition } = useContext(MenuContext);
 
   function handleClick(e) {
     // 设定: 哪个 MenuList 需要展示
-    setCurrentId(id);
+    openMenuList(id);
 
     // 获取 `click 时光标的位置信息`
     // e.target 返回 Element
@@ -127,13 +142,16 @@ Menus.LaunchButton = LaunchButton;
 
 // LaunchButton 负责设置 currentId, 如果某个 MenuList 的 id 与其匹配, 该 MenuList 就会被展示
 function MenuList({ children, id }) {
-  const { currentId, position } = useContext(MenuContext);
+  const { currentId, closeAllMenuList, position } = useContext(MenuContext);
+  const ref = useClickOutsideRef(closeAllMenuList);
 
   // StyledMenuList 会使用 props.position 来给底层的 <ul> 定位
   return (
     currentId === id &&
     createPortal(
-      <StyledMenuList position={position}>{children}</StyledMenuList>,
+      <StyledMenuList position={position} ref={ref}>
+        {children}
+      </StyledMenuList>,
       document.body,
     )
   );
@@ -142,13 +160,13 @@ Menus.MenuList = MenuList;
 
 //props 'children': button icon and button text
 function Menu({ children, onClick }) {
-  const { setCurrentId, currentId } = useContext(MenuContext);
+  const { closeAllMenuList, currentId } = useContext(MenuContext);
 
   function handleClick(e) {
     console.log(`menu button of ${currentId} clicked`);
     onClick?.(); // 如果 menu button 指定了 'click' handler, 就执行
 
-    setCurrentId(""); // 关闭 currentId 对应的 <Menus.MenuList>
+    closeAllMenuList();
     // 上行代码存在的问题:
     // 如果让 Menus.Menu 充当 Modal.LaunchButton 如下:
     // <Menus.LaunchButton id="xxx" />

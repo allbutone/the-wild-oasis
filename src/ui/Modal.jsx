@@ -1,14 +1,8 @@
-import {
-  cloneElement,
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { cloneElement, createContext, useContext, useState } from "react";
 import { createPortal } from "react-dom";
 import { HiXMark } from "react-icons/hi2";
 import styled from "styled-components";
+import useClickOutsideRef from "../hooks/useClickOutsideRef";
 
 const StyledModal = styled.div`
   position: fixed;
@@ -108,6 +102,12 @@ export default function Modal({ children }) {
   // 记录 current content 是哪个, 默认为 '', 表示没有 content 要展示
   const [currentContentName, setCurrentContentName] = useState("");
 
+  function closeAllModalContent() {
+    setCurrentContentName("");
+  }
+  function openModalContent(name) {
+    setCurrentContentName(name);
+  }
   return (
     // 将 showContent 和 setShowContent 放入 context 内, 以便 children 可按需:
     // 1. 根据 context 内的 showContent 展示/隐藏 modal content
@@ -115,7 +115,8 @@ export default function Modal({ children }) {
     <ModalContext.Provider
       value={{
         currentContentName,
-        setCurrentContentName,
+        closeAllModalContent,
+        openModalContent,
       }}
     >
       {children}
@@ -125,7 +126,7 @@ export default function Modal({ children }) {
 
 // children: custom launch button
 function LaunchButton({ children, launches }) {
-  const { setCurrentContentName } = useContext(ModalContext);
+  const { openModalContent } = useContext(ModalContext);
 
   // 下面的问题是:
   // 无法为 children 指定 props 'onClick' 来 launch modal content
@@ -134,7 +135,7 @@ function LaunchButton({ children, launches }) {
   return cloneElement(children, {
     onClick: () => {
       console.log(`modal launches button of ${launches} clicked!`);
-      setCurrentContentName(launches);
+      openModalContent(launches);
       // e.stopPropagation();
     },
   });
@@ -143,71 +144,26 @@ Modal.LaunchButton = LaunchButton; //为了使用方便
 
 // children: custom modal content
 function Content({ children, name }) {
-  const { currentContentName, setCurrentContentName } =
-    useContext(ModalContext);
+  const { currentContentName, closeAllModalContent } = useContext(ModalContext);
 
-  const ref = useRef();
+  const ref = useClickOutsideRef(closeAllModalContent);
 
-  //Modal.Content mount/init-render 时, 添加对应的 event listener
-  //实现: click outside of modal -> close modal
-  useEffect(() => {
-    console.log("run setup fn to add event listener");
-    //setup fn
-    const clickHandler = (e) => {
-      // <xxx ref={ref}> 会发生什么?
-      // 参考 https://react.dev/reference/react/useRef#manipulating-the-dom-with-a-ref 可知:
-      // 当 react 为 xxx 创建 dom node 后, react 会将 ref.current 赋值为 dom node
-      // 当 dom node 销毁后, react 会将 ref.current 赋值为 null
-      //
-      // 如果 StyledModal 存在(ref.current 不为 null), 且事件游历到 StyledModal 外围, 就关闭 StyledOverlay
-      if (ref.current && e.target.contains(ref.current)) {
-        console.log(ref.current);
-        console.log("click outside modal window...");
-        setCurrentContentName("");
-      }
-    };
-    //为 document.body 添加 onclick handler 如下后, 实测发现: click button 'add cabin' 没有任何反应
-    // document.body.addEventListener("click", clickHandler); // 第三个 argument 默认为 false, 表示: handler is called during bubbling phase
-    //
-    //分析如下:
-    //0. click button 'add cabin' -> browser creates an event object
-    //1. event 继续向下传播(capturing phase)
-    //2. event 到达 button 'add cabin' -> triggers onclick handler of button (open Modal (Modal.Content 会设置 onclick handler of document.body))
-    //3. event 继续向上传播(bubbling phase)
-    //4. event 到达 Modal 之外 -> triggers onclick handler of document.body (which will close Modal)
-    //5. event 到达 root, 结束
-    //
-    //解决方式-1: 让 onclick handler of button 最后额外执行 e.stopPropagation()
-    //解决方式-2: 让 onclick handler of document.body 在 caturing phase 执行
-    document.body.addEventListener("click", clickHandler, true); // 第三个 argument 指定为 true, 表示: handler is called during capturing phase
-
-    //cleanup fn
-    return () => {
-      console.log("run cleanup fn to remove event listener");
-      // document.body.removeEventListener("click", clickHandler);
-      document.body.removeEventListener("click", clickHandler, true);
-    };
-  }, [setCurrentContentName]);
-
-  function closeModalContent() {
-    setCurrentContentName("");
-  }
   return (
     name === currentContentName &&
     createPortal(
       <StyledOverlay>
         <StyledModal ref={ref}>
           {/* modal window 右上角的关闭按钮 */}
-          <StyledCloseButton onClick={closeModalContent}>
+          <StyledCloseButton onClick={closeAllModalContent}>
             <HiXMark />
           </StyledCloseButton>
 
           {/* 如果 children 内也有需要触发 close modal content 的地方*/}
-          {/* 就需要将 closeModalContent 作为 props 传递到 children 内 */}
+          {/* 就需要将 closeAllModalContent 作为 props 传递到 children 内 */}
           {/* 但问题时: 无法直接为 children 添加 props */}
           {/* {children} */}
           {/* 就只好通过 cloneElement 将 props 'onClose' 注入到 children 对应的组件中  */}
-          {cloneElement(children, { onClose: closeModalContent })}
+          {cloneElement(children, { onClose: closeAllModalContent })}
         </StyledModal>
       </StyledOverlay>,
       document.body,
