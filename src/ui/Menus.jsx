@@ -29,6 +29,8 @@ const StyledMenuList = styled.ul`
   box-shadow: var(--shadow-md);
   border-radius: var(--border-radius-md);
 
+  z-index: 10;
+
   left: ${(props) => props.position.right - props.position.width / 2}px;
   top: ${(props) => props.position.bottom - props.position.height / 2}px;
 `;
