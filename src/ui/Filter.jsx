@@ -57,6 +57,8 @@ export default function Filter({ fieldName, options }) {
       {options.map((option) => (
         <FilterButton
           key={option.value}
+          // 如果 FilterButton 被点击了, 就添加 active 样式做区分
+          active={searchParams.get(fieldName) === option.value}
           onClick={() => {
             setSearchParams((params) => {
               params.set(fieldName, option.value);
