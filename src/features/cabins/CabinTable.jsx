@@ -22,15 +22,13 @@ export default function CabinTable() {
   }
   let filteredCabins;
   switch (discount) {
-    case "all":
-      filteredCabins = data;
-      break;
     case "with-discount":
       filteredCabins = data.filter((cabin) => cabin.discount > 0);
       break;
     case "no-discount":
       filteredCabins = data.filter((cabin) => cabin.discount === 0);
       break;
+    // 如果 url 中未指定 searchParam 'discount'
     default:
       filteredCabins = data;
   }

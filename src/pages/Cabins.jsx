@@ -11,7 +11,7 @@ function Cabins() {
         <Heading as="h1">All cabins</Heading>
         {/* <p>filter / sort</p> */}
         <Filter fieldName={'discount'} options={[
-          {value: 'all', label: 'All'},
+          {value: 'all', label: 'All', default: true},
           {value: 'with-discount', label: 'With Discount'},
           {value: 'no-discount', label: 'No Discount'},
         ]}/>

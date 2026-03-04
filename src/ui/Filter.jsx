@@ -40,16 +40,24 @@ const FilterButton = styled.button`
 // 在 Filter 中设置 search param `discount=xxx`
 // 在 CabinTable 中订阅 search param `discount=xxx` 并根据 xxx 的值对 cabins 进行过滤
 // fieldName: 根据哪个 field 进行 filter
-// options: filter 可以使用的选项, 其结构如下, 其中 value 为 field value, 而 label 为 field value 体现在界面上的值
+// options: filter 可以使用的选项, 其结构如下, 其中:
+// - value 为 field value
+// - label 为 field value 体现在界面上的值
 // [
+//   {value: 'all', label: 'All'}
 //   {value: 'with-discount', label: 'With discount'}
 //   {value: 'no-discount', label: 'No discount'}
-//   {value: 'all', label: 'All'}
 // ]
+// 默认第一个 option 为 default option
 export default function Filter({ fieldName, options }) {
   // 获取/设置 search param 需要使用 hook `useSearchParams` 如下:
   const [searchParams, setSearchParams] = useSearchParams();
 
+  // 如果 url 中未指定 search param 'discount'
+  // 则默认为 ?discount=yyy
+  // 其中 yyy 为 options.at(0).value
+  // 这样: first filter button 会被默认选中
+  const currentValue = searchParams.get(fieldName) || options.at(0).value;
   return (
     <StyledFilter>
       {/* When you call setSearchParams */}
@@ -60,7 +68,7 @@ export default function Filter({ fieldName, options }) {
         <FilterButton
           key={option.value}
           // 如果 FilterButton 被点击了, 就添加 active 样式做区分
-          active={searchParams.get(fieldName) === option.value}
+          active={currentValue === option.value}
           onClick={() => {
             setSearchParams((params) => {
               params.set(fieldName, option.value);
