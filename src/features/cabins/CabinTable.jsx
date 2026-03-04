@@ -4,8 +4,14 @@ import toast from "react-hot-toast";
 import { useCabins } from "./useCabins.js";
 import Table from "../../ui/Table.jsx";
 import Menus from "../../ui/Menus.jsx";
+import { useSearchParams } from "react-router-dom";
 
 export default function CabinTable() {
+  // 根据 search param `discount` 的值来 filter 数据(cabins)
+  const [searchParams] = useSearchParams();
+  const discount = searchParams.get("discount");
+  console.log(discount);
+
   const { isLoading, data, isError, error } = useCabins();
   if (isLoading) {
     return <Spinner></Spinner>;
@@ -14,6 +20,22 @@ export default function CabinTable() {
     toast.error(error.message);
     return null;
   }
+  let filteredCabins;
+  switch (discount) {
+    case "all":
+      filteredCabins = data;
+      break;
+    case "with-discount":
+      filteredCabins = data.filter((cabin) => cabin.discount > 0);
+      break;
+    case "no-discount":
+      filteredCabins = data.filter((cabin) => cabin.discount === 0);
+      break;
+    default:
+      filteredCabins = data;
+  }
+  console.log(filteredCabins);
+
   return (
     <>
       {/* 
@@ -53,7 +75,8 @@ export default function CabinTable() {
             <div></div>
           </Table.Header>
           <Table.Body
-            data={data}
+            data={filteredCabins}
+            // data={data}
             // 测试 data 为空时, 是否展示 <Empty />
             // data={[]}
             render={(cabin) => <CabinTableRow cabin={cabin} key={cabin.id} />}
