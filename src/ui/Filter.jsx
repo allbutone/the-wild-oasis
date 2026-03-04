@@ -37,7 +37,14 @@ const FilterButton = styled.button`
 
 // 在 Filter 中设置 search param `discount=xxx`
 // 在 CabinTable 中订阅 search param `discount=xxx` 并根据 xxx 的值对 cabins 进行过滤
-export default function Filter() {
+// fieldName: 根据哪个 field 进行 filter
+// options: filter 可以使用的选项, 其结构如下, 其中 value 为 field value, 而 label 为 field value 体现在界面上的值
+// [
+//   {value: 'with-discount', label: 'With discount'}
+//   {value: 'no-discount', label: 'No discount'}
+//   {value: 'all', label: 'All'}
+// ]
+export default function Filter({ fieldName, options }) {
   // 获取/设置 search param 需要使用 hook `useSearchParams` 如下:
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -47,36 +54,19 @@ export default function Filter() {
       {/* it replaces the entire existing query string with the new values provided.  */}
       {/* To update only a single parameter while preserving others */}
       {/* you can use functional updates or merge the existing params with new ones */}
-      <FilterButton
-        onClick={() => {
-          setSearchParams((params) => {
-            params.set("discount", "all");
-            return params;
-          });
-        }}
-      >
-        All
-      </FilterButton>
-      <FilterButton
-        onClick={() => {
-          setSearchParams((params) => {
-            params.set("discount", "with-discount");
-            return params;
-          });
-        }}
-      >
-        With discount
-      </FilterButton>
-      <FilterButton
-        onClick={() => {
-          setSearchParams((params) => {
-            params.set("discount", "no-discount");
-            return params;
-          });
-        }}
-      >
-        No discount
-      </FilterButton>
+      {options.map((option) => (
+        <FilterButton
+          key={option.value}
+          onClick={() => {
+            setSearchParams((params) => {
+              params.set(fieldName, option.value);
+              return params;
+            });
+          }}
+        >
+          {option.label}
+        </FilterButton>
+      ))}
     </StyledFilter>
   );
 }
