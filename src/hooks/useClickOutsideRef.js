@@ -19,9 +19,22 @@ export default function useClickOutsideRef(closeRefEle) {
 
       // 如果 referenced_dom_element 存在(ref.current 不为 null), 且事件游历到 referenced_dom_element 之外
       // 就执行 callback 来 close referenced_dom_element(例如 click outside of Modal.Content, callback 指定为: 关闭 Modal.Content)
-      if (ref.current && e.target.contains(ref.current)) {
+      console.log(e);
+
+      /* if (referencedEle && e.target.contains(referencedEle)) { 
         console.log(`click outside referenced dom element: `);
-        console.log(ref.current);
+        console.log(referencedEle);
+        closeRefEle();
+      } */
+      // 上面使用 e.target.contains(referencedEle) 来判断"点击的位置在 referencedEle 之外" 是有问题的:
+      // 因为其意思是: 点击位置在 referencedEle 的 ancestor 上, 才会 close referencedEle
+      // 将判断条件修改为 !referencedEle.contains(e.target) 就对了, 此时:
+      // 只要点击位置不在 referencedEle 之内, 就 close referencedEle
+      // 这样, 即便 referencedEle 被 createPortal 放到 document.body 下, 也可以正常 close referencedEle
+      // 否则, 由于 user 无法 click referencedEle 之上的 element (对 user 不可见), 就无法 close referencedEle
+      if (referencedEle && !referencedEle.contains(e.target)) {
+        console.log(`click outside referenced dom element: `);
+        console.log(referencedEle);
         closeRefEle();
       }
     };
