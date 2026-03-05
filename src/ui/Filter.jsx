@@ -75,6 +75,7 @@ export default function Filter({ fieldName, options }) {
               return params;
             });
           }}
+          disabled={currentValue === option.value}
         >
           {option.label}
         </FilterButton>
