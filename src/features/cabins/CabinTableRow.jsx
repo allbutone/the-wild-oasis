@@ -105,7 +105,7 @@ export default function CabinTableRow({ cabin }) {
       {/* column1 */}
       <Img src={image} />
       {/* column2 */}
-      <Cabin>{`${id}-${name}`}</Cabin>
+      <Cabin>{`${name}(${id})`}</Cabin>
       {/* column3 */}
       <div>{maxCapacity}</div>
       {/* column4 */}

@@ -20,6 +20,7 @@ export default function CabinTable() {
     toast.error(error.message);
     return null;
   }
+  // 对数据进行筛选(filter)
   let filteredCabins;
   switch (discount) {
     case "with-discount":
@@ -32,7 +33,22 @@ export default function CabinTable() {
     default:
       filteredCabins = data;
   }
+  console.log(`filtered cabins: `);
   console.log(filteredCabins);
+
+  // 对过滤后的数据进行排序(sort):
+  const sortBy = searchParams.get("sortBy") || "none";
+  let sortedCabins;
+  if (sortBy === "none") {
+    sortedCabins = filteredCabins;
+  } else {
+    const [sortField, sortDirection] = sortBy.split("-");
+    if (sortDirection === "asc")
+      sortedCabins = filteredCabins.sort((a, b) => a[sortField] - b[sortField]); // 前者减后者, 是升序
+    if (sortDirection === "desc") {
+      sortedCabins = filteredCabins.sort((a, b) => b[sortField] - a[sortField]);
+    }
+  }
 
   return (
     <>
@@ -73,7 +89,8 @@ export default function CabinTable() {
             <div></div>
           </Table.Header>
           <Table.Body
-            data={filteredCabins}
+            // data={filteredCabins}
+            data={sortedCabins}
             // data={data}
             // 测试 data 为空时, 是否展示 <Empty />
             // data={[]}

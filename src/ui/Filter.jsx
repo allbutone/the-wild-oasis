@@ -68,6 +68,7 @@ export default function Filter({ fieldName, options }) {
         <FilterButton
           key={option.value}
           // 如果 FilterButton 被点击了, 就添加 active 样式做区分
+          // FilterButton 需要 props 'active' 来动态添加 active style
           active={currentValue === option.value}
           onClick={() => {
             setSearchParams((params) => {
