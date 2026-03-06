@@ -71,9 +71,12 @@ export default function Filter({ fieldName, options }) {
           // FilterButton 需要 props 'active' 来动态添加 active style
           active={currentValue === option.value}
           onClick={() => {
-            setSearchParams((params) => {
-              params.set(fieldName, option.value);
-              return params;
+            setSearchParams((prevParams) => {
+              prevParams.set(fieldName, option.value);
+              // 修改过滤条件后, 应该重新从第一页显示, 否则如果当前 page 是第 10 页
+              // 过滤后的数据可能没有那么多页, 导致没有任何数据可以展示
+              prevParams.set("page", 1);
+              return prevParams;
             });
           }}
           disabled={currentValue === option.value}

@@ -1,33 +1,53 @@
 import { getToday } from "../utils/helpers";
 import supabase from "./supabase";
 
-// filter 是一个 object, 其中: 
+// filter 是一个 object, 其中:
 // - field: 根据哪个字段进行过滤
 // - value: 字段的值
 // - method: field 和 value 的关系, 例如 'eq', 'gt' 对应 supabase 的 query method
-export async function getBookings(filter, sort) {
+//
+// sort 是一个 object, 其中:
+// - field: 根据哪个字段排序
+// - value: 'asc' or 'desc'
+//
+// page 是一个 object, 其中:
+// - pageCurrent: 当前页码
+// - pageSize: 每页多少条数据
+export async function getBookings(filter, sort, page) {
   let query = supabase
     .from("bookings")
     // .select('*, cabins(*), guests(*)');
     // 精确获取所需数据, 而不是全部, 如下(和 BookingRow 所需 field 一一对应):
     .select(
       "id, created_at, startDate, endDate, numNights, numGuests, totalPrice, status,  cabins(name), guests(fullName)",
+      { count: "exact" }, // 这样结果里可以额外 destructure 出来 count
     );
 
   // 如果指定了 filter 条件
   if (filter) {
     query = query[filter.method || "eq"](filter.field, filter.value);
   }
-  if(sort){
-    query = query.order(sort.field, { ascending: sort.direction === 'asc' })
+  // 如果指定了 sort 条件
+  if (sort) {
+    query = query.order(sort.field, { ascending: sort.direction === "asc" });
   }
-  const { data, error } = await query;
+  // 如果指定了 page 和 size
+  if(page){
+    const {pageCurrent, pageSize} = page;
+    const from = (pageCurrent - 1) * pageSize; // 0-based index, inclusive
+    const to = from + pageSize - 1;// 0-based index, inclusive
+    query = query.range(from, to);
+  }
+  const result = await query;
+  console.log(`result of getBookings: `)
+  console.log(result);
+  const { data, error, count } = result;
 
   if (error) {
     throw new Error(error.message);
   }
   // return []; // 测试 BookingTable 是否会对应展示 Empty 组件
-  return data;
+  return { data, count };
 }
 
 export async function getBooking(id) {
