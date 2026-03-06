@@ -3,7 +3,7 @@ import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
 import Spinner from "../../ui/Spinner";
 import Empty from "../../ui/Empty";
-import useBookings from "./useBooks";
+import useBookings from "./useBookings";
 
 function BookingTable() {
   const { isLoading, bookings, isError, error } = useBookings();
