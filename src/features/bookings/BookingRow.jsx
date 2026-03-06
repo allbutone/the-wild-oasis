@@ -48,6 +48,7 @@ function BookingRow({
     cabins: { name: cabinName },
   },
 }) {
+  // map status to color, status 只能是 'unconfirmed'/'checked-in'/'checked-out'
   const statusToColor = {
     unconfirmed: "blue",
     "checked-in": "green",

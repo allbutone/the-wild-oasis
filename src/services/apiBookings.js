@@ -1,14 +1,27 @@
 import { getToday } from "../utils/helpers";
 import supabase from "./supabase";
 
-export async function getBookings() {
-  const { data, error } = await supabase
+// filter 是一个 object, 其中: 
+// - field: 根据哪个字段进行过滤
+// - value: 字段的值
+// - method: field 和 value 的关系, 例如 'eq', 'gt' 对应 supabase 的 query method
+export async function getBookings(filter, sort) {
+  let query = supabase
     .from("bookings")
     // .select('*, cabins(*), guests(*)');
     // 精确获取所需数据, 而不是全部, 如下(和 BookingRow 所需 field 一一对应):
     .select(
       "id, created_at, startDate, endDate, numNights, numGuests, totalPrice, status,  cabins(name), guests(fullName)",
     );
+
+  // 如果指定了 filter 条件
+  if (filter) {
+    query = query[filter.method || "eq"](filter.field, filter.value);
+  }
+  if(sort){
+    query = query.order(sort.field, { ascending: sort.direction === 'asc' })
+  }
+  const { data, error } = await query;
 
   if (error) {
     throw new Error(error.message);
