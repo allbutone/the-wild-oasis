@@ -3,7 +3,7 @@ import Select from "./Select";
 
 // 和 Filter 的作用相同, Sort 也是添加 search params, 例如 ?sortBy=name-asc
 // 其中 `sortBy` 是固定不变(不允许指定)的, 而 name-asc 则对应 option.value
-export default function Sort({ options }) {
+export default function Sort({ options, ...otherProps }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // 数据流向: <select/> -> state 'searchParams'
@@ -15,7 +15,7 @@ export default function Sort({ options }) {
   }
 
   // 数据流向: state 'searchParams' -> <select/>
-  const defaultValue = searchParams.get("sortBy") || '';
+  const defaultValue = searchParams.get("sortBy") || "";
 
   // <Select> 底层是 <select> 是一个 controlled input:
   // 1. 需要传入 props 'defaultValue', prop value 将赋值给 <select> 的 attr 'value'
@@ -25,6 +25,8 @@ export default function Sort({ options }) {
       options={options}
       defaultValue={defaultValue}
       onChange={onChange}
+      // 借助 spread operator 实现 any other props 在 `Sort -> Select -> StyledSelect` 的透传
+      {...otherProps}
     ></Select>
   );
 }

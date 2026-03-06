@@ -48,7 +48,7 @@ function BookingRow({
     cabins: { name: cabinName },
   },
 }) {
-  const statusToTagName = {
+  const statusToColor = {
     unconfirmed: "blue",
     "checked-in": "green",
     "checked-out": "silver",
@@ -76,7 +76,8 @@ function BookingRow({
         </span>
       </Stacked>
 
-      <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
+      {/* Tag 是一个 styled component, 会根据 props 'color' 来展示 status 对应的 color */}
+      <Tag color={statusToColor[status]}>{status.replace("-", " ")}</Tag>
 
       <Amount>{formatCurrency(totalPrice)}</Amount>
     </Table.Row>

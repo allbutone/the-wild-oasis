@@ -30,6 +30,8 @@ function Cabins() {
             { value: "discount-asc", label: "sort by discount, asc" },
             { value: "discount-desc", label: "sort by discount, desc" },
           ]}
+          // props 'type' 最终传递给底层的 styled component Select
+          type="white"
         />
       </StyledRow>
       <StyledRow type="vertical">

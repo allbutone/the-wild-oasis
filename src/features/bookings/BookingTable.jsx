@@ -1,9 +1,26 @@
 import BookingRow from "./BookingRow";
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
+import { useQuery } from "@tanstack/react-query";
+import { getBookings } from "../../services/apiBookings";
+import Spinner from "../../ui/Spinner";
+import Empty from "../../ui/Empty";
 
 function BookingTable() {
-  const bookings = [];
+  const { isLoading, data: bookings, isError, error } = useQuery({
+    queryKey: ["bookings"],
+    queryFn: getBookings,
+  });
+
+  // const bookings = [];
+  // 加载数据时, 展示 spinner
+  if(isLoading){
+    return <Spinner />
+  }
+  // 加载数据完毕后, 如果没有数据, 就展示 Empty 组件
+  if(!bookings?.length){
+    return <Empty resource={'bookings'}/>
+  }
 
   return (
     <Menus>

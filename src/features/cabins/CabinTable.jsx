@@ -5,6 +5,7 @@ import { useCabins } from "./useCabins.js";
 import Table from "../../ui/Table.jsx";
 import Menus from "../../ui/Menus.jsx";
 import { useSearchParams } from "react-router-dom";
+import Empty from "../../ui/Empty.jsx";
 
 export default function CabinTable() {
   // 根据 search param `discount` 的值来 filter 数据(cabins)
@@ -15,6 +16,10 @@ export default function CabinTable() {
   const { isLoading, data, isError, error } = useCabins();
   if (isLoading) {
     return <Spinner></Spinner>;
+  }
+  if(!data.length){
+    // 如果加载完毕后, 没有数据, 就展示 Empty 组件
+    return <Empty resource={'cabins'}/>
   }
   if (isError) {
     toast.error(error.message);
