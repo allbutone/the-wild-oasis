@@ -2,6 +2,7 @@ import { useState } from "react";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
+import usePageAndSize from "../hooks/usePageAndSize";
 
 const StyledPagination = styled.div`
   width: 100%;
@@ -81,17 +82,7 @@ const PageSizeOption = styled.option``;
 // props 'count': 总记录数
 export default function Pagination({ count }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const pageCurrent = searchParams.get("page")
-    ? Number(searchParams.get("page"))
-    : 1; // 如果没有的话, 就默认第一页
-
-  // 使用 internal state 存储 page size 的缺点: 无法将 page size 共享给其他组件
-  // const [pageSize, setPageSize] = useState(10); // 默认每页 10 条记录
-  // function handleChange(e) {
-  //   setPageSize(Number(e.target.value));
-  // }
-  // 转而使用 url (global UI state) 来存储 page size:
-  const pageSize = searchParams.get('size') ? Number(searchParams.get('size')) : 10;
+  const {pageCurrent, pageSize} = usePageAndSize();
   function handleChange(e) {
     setSearchParams(prevParams => {
       prevParams.set('size', Number(e.target.value));
