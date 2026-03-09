@@ -7,9 +7,6 @@ export default function useBookings() {
   const [searchParams] = useSearchParams();
   const { page, size } = useSearchParamPageAndSize();
 
-  const pageCurrent = { size, page };
-  const pageNext = { size, page: page + 1 };
-
   // add filter conditions for bookings
   const status = searchParams.get("status") || "all";
   const filter = status === "all" ? null : { field: "status", value: status };
@@ -18,6 +15,8 @@ export default function useBookings() {
   const sortBy = searchParams.get("sortBy") || "id-asc"; // 默认为第一个 option
   const [field, direction] = sortBy.split("-");
   const sort = { field, direction };
+
+  const pageCurrent = { size, page };
 
   const {
     isLoading,
@@ -34,12 +33,21 @@ export default function useBookings() {
   //prefetchQuery() 会 return promise (promise to get data of next page)
   //但不要在 prefetchQuery() 前面添加 await, 否则会耽误 data of current page 的获取
   const pageCount = Math.ceil(count / size);
-  //如果当前页已经是最后一页, 就不要预载下一页数据了
+  const pageNext = { size, page: page + 1 };
+  //only prefetch next page when the current page is not the last page
   if (page < pageCount) {
     //如果要与查询的数据已经有了, 可以直接 queryClient.setQueryData
     queryClient.prefetchQuery({
       queryKey: ["bookings", filter, sort, pageNext],
       queryFn: () => getBookings(filter, sort, pageNext),
+    });
+  }
+  //only prefetch previous page when the current page is not the first page
+  const pagePrev = { size, page: page - 1 };
+  if (page > 1) {
+    queryClient.prefetchQuery({
+      queryKey: ["bookings", filter, sort, pagePrev],
+      queryFn: () => getBookings(filter, sort, pagePrev),
     });
   }
 
