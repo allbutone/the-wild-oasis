@@ -6,6 +6,10 @@ import Table from "../../ui/Table";
 
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
+import Menus from "../../ui/Menus";
+import { HiEllipsisHorizontal, HiEye } from "react-icons/hi2";
+import { useNavigate } from "react-router-dom";
+import { statusToColor } from "./constants";
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -48,22 +52,23 @@ function BookingRow({
     cabins: { name: cabinName },
   },
 }) {
+  const navigate = useNavigate();
   // map status to color, status 只能是 'unconfirmed'/'checked-in'/'checked-out'
-  const statusToColor = {
-    unconfirmed: "blue",
-    "checked-in": "green",
-    "checked-out": "silver",
-  };
 
   return (
     <Table.Row>
-      <Cabin>{cabinName}(id:{bookingId})</Cabin>
+      {/* column1 */}
+      <Cabin>
+        {cabinName}(id:{bookingId})
+      </Cabin>
 
+      {/* column2 */}
       <Stacked>
         <span>{guestName}</span>
         <span>{email}</span>
       </Stacked>
 
+      {/* column3 */}
       <Stacked>
         <span>
           {isToday(new Date(startDate))
@@ -77,10 +82,23 @@ function BookingRow({
         </span>
       </Stacked>
 
+      {/* column4 */}
       {/* Tag 是一个 styled component, 会根据 props 'color' 来展示 status 对应的 color */}
       <Tag color={statusToColor[status]}>{status.replace("-", " ")}</Tag>
 
+      {/* column5 */}
       <Amount>{formatCurrency(totalPrice)}</Amount>
+
+      {/* column6 */}
+      <Menus.LaunchButton id={bookingId}>
+        <HiEllipsisHorizontal />
+      </Menus.LaunchButton>
+      <Menus.MenuList id={bookingId}>
+        <Menus.Menu onClick={() => navigate(`/bookings/${bookingId}`)}>
+          <HiEye />
+          <span>show details</span>
+        </Menus.Menu>
+      </Menus.MenuList>
     </Table.Row>
   );
 }

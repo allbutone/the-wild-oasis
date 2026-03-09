@@ -12,6 +12,7 @@ import Settings from "./pages/Settings";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
+import Booking from "./pages/Booking";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,6 +37,10 @@ export default function App() {
             <Route path="dashboard" element={<Dashboard />}></Route>
             <Route path="account" element={<Account />}></Route>
             <Route path="bookings" element={<Bookings />}></Route>
+            <Route
+              path="bookings/:bookingId"
+              element={<Booking />}
+            ></Route>
             <Route path="cabins" element={<Cabins />}></Route>
             <Route path="users" element={<NewUsers />}></Route>
             <Route path="settings" element={<Settings />}></Route>
@@ -57,15 +62,15 @@ export default function App() {
         gutter={12}
         containerStyle={{ position: "fixed", margin: "10px", top: "20px" }}
         toastOptions={{
-          success: {duration: 3000}, // 操作成功提示, 3s 后自动 dismiss, 对应 toast.success('xxx')
-          error: {duration: 5000}, // 操作失败提示, 3s 后自动 dismiss, 对应 toast.error('yyy')
+          success: { duration: 3000 }, // 操作成功提示, 3s 后自动 dismiss, 对应 toast.success('xxx')
+          error: { duration: 5000 }, // 操作失败提示, 3s 后自动 dismiss, 对应 toast.error('yyy')
           style: {
-            fontSize: '16px',
-            maxWidth: '500px',
-            padding: '16px 24px',
+            fontSize: "16px",
+            maxWidth: "500px",
+            padding: "16px 24px",
             backgroundColor: "var(--color-grey-0)",
             color: "var(--color-grey-700)",
-          }
+          },
         }}
       />
     </QueryClientProvider>
