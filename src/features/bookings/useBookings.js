@@ -1,11 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getBookings } from "../../services/apiBookings";
 import { useSearchParams } from "react-router-dom";
-import usePageAndSize from "../../hooks/usePageAndSize";
+import useSearchParamPageAndSize from "../../hooks/usePageAndSize";
 
 export default function useBookings() {
   const [searchParams] = useSearchParams();
-  const {pageCurrent, pageSize} = usePageAndSize();
+  const { page, size } = useSearchParamPageAndSize();
+
+  const pageCurrent = { size, page };
+  const pageNext = { size, page: page + 1 };
 
   // add filter conditions for bookings
   const status = searchParams.get("status") || "all";
@@ -16,7 +19,15 @@ export default function useBookings() {
   const [field, direction] = sortBy.split("-");
   const sort = { field, direction };
 
-  const page = {pageCurrent, pageSize};
+  //prefetching for next page:
+  //如果要与查询的数据已经有了, 可以直接 queryClient.setQueryData
+  const queryClient = useQueryClient();
+  //prefetchQuery() 会 return promise (promise to get data of next page)
+  //但不要在 prefetchQuery() 前面添加 await, 否则会耽误 data of current page 的获取
+  queryClient.prefetchQuery({
+    queryKey: ["bookings", filter, sort, pageNext],
+    queryFn: () => getBookings(filter, sort, pageNext),
+  });
 
   const {
     isLoading,
@@ -24,8 +35,8 @@ export default function useBookings() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["bookings", filter, sort, page], // 建议在 react query devtools 中观察 key 值
-    queryFn: () => getBookings(filter, sort, page),
+    queryKey: ["bookings", filter, sort, pageCurrent], // 建议在 react query devtools 中观察 key 值
+    queryFn: () => getBookings(filter, sort, pageCurrent),
   });
 
   return {

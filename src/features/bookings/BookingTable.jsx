@@ -9,15 +9,13 @@ import Pagination from "../../ui/Pagination";
 function BookingTable() {
   const { isLoading, bookings, count, isError, error } = useBookings();
 
-  // const bookings = [];
-  // 加载数据时, 展示 spinner
   if (isLoading) {
     return <Spinner />;
   }
-  // 加载数据完毕后, 如果没有数据, 就展示 Empty 组件
-  // if (!bookings?.length) {
-  //   return <Empty resource={"bookings"} />;
-  // }
+  if (!bookings?.length) {
+    return <Empty resource={"bookings"} />;
+  }
+
 
   return (
     <Menus>

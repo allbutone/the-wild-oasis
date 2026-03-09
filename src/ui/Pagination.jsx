@@ -82,7 +82,7 @@ const PageSizeOption = styled.option``;
 // props 'count': 总记录数
 export default function Pagination({ count }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const {pageCurrent, pageSize} = usePageAndSize();
+  const {page: pageCurrent, size: pageSize} = usePageAndSize();
   function handleChange(e) {
     setSearchParams(prevParams => {
       prevParams.set('size', Number(e.target.value));

@@ -13,7 +13,14 @@ import supabase from "./supabase";
 // page 是一个 object, 其中:
 // - pageCurrent: 当前页码
 // - pageSize: 每页多少条数据
-export async function getBookings(filter, sort, page) {
+export async function getBookings(filter, sort, pageInfo) {
+  console.log(`filter by: `);
+  console.log(filter);
+  console.log(`sort by: `);
+  console.log(sort);
+  console.log(`of page: `);
+  console.log(pageInfo);
+
   let query = supabase
     .from("bookings")
     // .select('*, cabins(*), guests(*)');
@@ -32,14 +39,14 @@ export async function getBookings(filter, sort, page) {
     query = query.order(sort.field, { ascending: sort.direction === "asc" });
   }
   // 如果指定了 page 和 size
-  if(page){
-    const {pageCurrent, pageSize} = page;
-    const from = (pageCurrent - 1) * pageSize; // 0-based index, inclusive
-    const to = from + pageSize - 1;// 0-based index, inclusive
+  if (pageInfo) {
+    const { page, size } = pageInfo;
+    const from = (page - 1) * size; // 0-based index, inclusive
+    const to = from + size - 1; // 0-based index, inclusive
     query = query.range(from, to);
   }
   const result = await query;
-  console.log(`result of getBookings: `)
+  console.log(`query result: `);
   console.log(result);
   const { data, error, count } = result;
 
