@@ -76,6 +76,9 @@ const StyledMenuButton = styled.button`
     color: var(--color-grey-400);
     transition: all 0.3s;
   }
+  & span {
+    width: max-content;
+  }
 `;
 
 const MenuContext = createContext();
