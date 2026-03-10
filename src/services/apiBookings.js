@@ -14,12 +14,12 @@ import supabase from "./supabase";
 // - pageCurrent: 当前页码
 // - pageSize: 每页多少条数据
 export async function getBookings(filter, sort, pageInfo) {
-  console.log(`filter by: `);
-  console.log(filter);
-  console.log(`sort by: `);
-  console.log(sort);
-  console.log(`of page: `);
-  console.log(pageInfo);
+  // console.log(`filter by: `);
+  // console.log(filter);
+  // console.log(`sort by: `);
+  // console.log(sort);
+  // console.log(`of page: `);
+  // console.log(pageInfo);
 
   let query = supabase
     .from("bookings")
@@ -46,8 +46,8 @@ export async function getBookings(filter, sort, pageInfo) {
     query = query.range(from, to);
   }
   const result = await query;
-  console.log(`query result: `);
-  console.log(result);
+  // console.log(`query result: `);
+  // console.log(result);
   const { data, error, count } = result;
 
   if (error) {

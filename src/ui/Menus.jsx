@@ -33,7 +33,9 @@ const StyledMenuList = styled.ul`
 
   z-index: 10;
 
-  left: ${(props) => props.position.right - props.position.width / 2}px;
+  //left: ${(props) => props.position.right - props.position.width / 2}px;
+  //top: ${(props) => props.position.bottom - props.position.height / 2}px;
+  right: ${(props) => window.innerWidth - props.position.right + props.position.width / 2}px;
   top: ${(props) => props.position.bottom - props.position.height / 2}px;
 `;
 // 一开始为了测试方便, 可以先这么设置:
@@ -166,7 +168,7 @@ function Menu({ children, onClick }) {
   const { closeAllMenuList, currentId } = useContext(MenuContext);
 
   function handleClick(e) {
-    console.log(`menu button of ${currentId} clicked`);
+    // console.log(`menu button of ${currentId} clicked`);
     onClick?.(); // 如果 menu button 指定了 'click' handler, 就执行
 
     closeAllMenuList();

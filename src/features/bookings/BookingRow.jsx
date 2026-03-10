@@ -7,7 +7,11 @@ import Table from "../../ui/Table";
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
 import Menus from "../../ui/Menus";
-import { HiEllipsisHorizontal, HiEye } from "react-icons/hi2";
+import {
+  HiArrowDownOnSquare,
+  HiEllipsisHorizontal,
+  HiEye,
+} from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { statusToColor } from "./constants";
 
@@ -98,6 +102,13 @@ function BookingRow({
           <HiEye />
           <span>show details</span>
         </Menus.Menu>
+        {/* 只有 status 为 unconfirmed 的 booking 可以被 check in, 其他(checked-in 和 checked-out) 都是不可以 办理 checkin 的 */}
+        {status === "unconfirmed" && (
+          <Menus.Menu onClick={() => navigate(`/checkin/${bookingId}`)}>
+            <HiArrowDownOnSquare />
+            <span>check in</span>
+          </Menus.Menu>
+        )}
       </Menus.MenuList>
     </Table.Row>
   );

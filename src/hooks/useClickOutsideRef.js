@@ -5,12 +5,12 @@ export default function useClickOutsideRef(closeRefEle) {
   useEffect(() => {
     //setup fn
     const referencedEle = ref.current;
-    if (referencedEle) {
-      console.log(
-        "run setup fn to add click handler for when clicking outside of: ",
-      );
-      console.log(referencedEle);
-    }
+    // if (referencedEle) {
+    //   console.log(
+    //     "run setup fn to add click handler for when clicking outside of: ",
+    //   );
+    //   console.log(referencedEle);
+    // }
     const clickHandler = (e) => {
       // <xxx ref={ref}> 会发生什么?
       // 参考 https://react.dev/reference/react/useRef#manipulating-the-dom-with-a-ref 可知:
@@ -19,7 +19,7 @@ export default function useClickOutsideRef(closeRefEle) {
 
       // 如果 referenced_dom_element 存在(ref.current 不为 null), 且事件游历到 referenced_dom_element 之外
       // 就执行 callback 来 close referenced_dom_element(例如 click outside of Modal.Content, callback 指定为: 关闭 Modal.Content)
-      console.log(e);
+      // console.log(e);
 
       /* if (referencedEle && e.target.contains(referencedEle)) { 
         console.log(`click outside referenced dom element: `);
@@ -33,8 +33,8 @@ export default function useClickOutsideRef(closeRefEle) {
       // 这样, 即便 referencedEle 被 createPortal 放到 document.body 下, 也可以正常 close referencedEle
       // 否则, 由于 user 无法 click referencedEle 之上的 element (对 user 不可见), 就无法 close referencedEle
       if (referencedEle && !referencedEle.contains(e.target)) {
-        console.log(`click outside referenced dom element: `);
-        console.log(referencedEle);
+        // console.log(`click outside referenced dom element: `);
+        // console.log(referencedEle);
         closeRefEle();
       }
     };
@@ -55,12 +55,12 @@ export default function useClickOutsideRef(closeRefEle) {
 
     //cleanup fn
     return () => {
-      if (referencedEle) {
-        console.log(
-          "run cleanup fn to remove click handler for when clicking outside of: ",
-        );
-        console.log(referencedEle);
-      }
+      // if (referencedEle) {
+        // console.log(
+        //   "run cleanup fn to remove click handler for when clicking outside of: ",
+        // );
+        // console.log(referencedEle);
+      // }
       // document.body.removeEventListener("click", clickHandler);
       document.body.removeEventListener("click", clickHandler, true);
     };
