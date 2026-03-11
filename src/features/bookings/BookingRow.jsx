@@ -9,11 +9,13 @@ import { formatDistanceFromNow } from "../../utils/helpers";
 import Menus from "../../ui/Menus";
 import {
   HiArrowDownOnSquare,
+  HiArrowUpOnSquare,
   HiEllipsisHorizontal,
   HiEye,
 } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { statusToColor } from "./constants";
+import { useCheckout } from "../check-in-out/useCheckout";
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -56,6 +58,7 @@ function BookingRow({
     cabins: { name: cabinName },
   },
 }) {
+  const { isCheckingOut, checkout, isCheckoutError, checkoutError, checkoutResult } = useCheckout();
   const navigate = useNavigate();
   // map status to color, status 只能是 'unconfirmed'/'checked-in'/'checked-out'
 
@@ -107,6 +110,12 @@ function BookingRow({
           <Menus.Menu onClick={() => navigate(`/checkin/${bookingId}`)}>
             <HiArrowDownOnSquare />
             <span>check in</span>
+          </Menus.Menu>
+        )}
+        {status === "checked-in" && (
+          <Menus.Menu onClick={() => checkout(bookingId)}>
+            <HiArrowUpOnSquare />
+            <span>check out</span>
           </Menus.Menu>
         )}
       </Menus.MenuList>

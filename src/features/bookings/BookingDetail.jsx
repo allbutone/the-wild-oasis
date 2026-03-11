@@ -13,6 +13,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useBooking from "./useBooking";
 import Spinner from "../../ui/Spinner";
 import { statusToColor } from "./constants";
+import { useCheckout } from "../check-in-out/useCheckout";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -24,6 +25,13 @@ function BookingDetail() {
   const navigate = useNavigate();
   const { isLoading, booking, isError, error } = useBooking();
   const moveBack = useMoveBack();
+  const {
+    isCheckingOut,
+    checkout,
+    isCheckoutError,
+    checkoutError,
+    checkoutResult,
+  } = useCheckout();
 
   if (isLoading) {
     return <Spinner />;
@@ -50,6 +58,11 @@ function BookingDetail() {
             onClick={() => navigate(`/checkin/${id}`)}
           >
             Go To Checkin
+          </Button>
+        )}
+        {status === "checked-in" && (
+          <Button variation="primary" onClick={() => checkout(id)} disabled={isCheckingOut}>
+            <span>check out</span>
           </Button>
         )}
         <Button variation="secondary" onClick={moveBack}>

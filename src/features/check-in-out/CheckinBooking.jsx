@@ -42,7 +42,7 @@ function CheckinBooking() {
   // 记录 customer 是否需要订早餐
   const [needBreakfast, setNeedBreakfast] = useState(false);
 
-  const { checkin, isCheckingIn, isCheckingError, checkInError } = useCheckin();
+  const { checkin, isCheckingIn, isCheckinError, checkInError } = useCheckin();
 
   // 当 booking 加载完毕后, 需要:
   // 1. 将 state 'confirmPaid' 和 booking.isPaid 进行同步

@@ -57,7 +57,7 @@ export function useCheckin() {
     checkin: mutate,
     isCheckingIn: isPending,
     checkingInResult: data,
-    isCheckingError: isError,
+    isCheckinError: isError,
     checkInError: error,
   };
 }
