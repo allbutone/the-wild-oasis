@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import Checkin from "../../pages/Checkin";
 import Checkbox from "../../ui/Checkbox";
 import { formatCurrency } from "../../utils/helpers";
-import { useCheckin } from "./useCheckin";
+import { useCheckinBooking } from "./useCheckinBooking";
 import { useSettings } from "../settings/useSettings";
 
 const Box = styled.div`
@@ -42,7 +42,7 @@ function CheckinBooking() {
   // 记录 customer 是否需要订早餐
   const [needBreakfast, setNeedBreakfast] = useState(false);
 
-  const { checkin, isCheckingIn, isCheckinError, checkInError } = useCheckin();
+  const { checkin, isCheckingIn, isCheckinError, checkInError } = useCheckinBooking();
 
   // 当 booking 加载完毕后, 需要:
   // 1. 将 state 'confirmPaid' 和 booking.isPaid 进行同步

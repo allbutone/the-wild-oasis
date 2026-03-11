@@ -33,7 +33,10 @@ function ConfirmDelete({ resourceName, onConfirm, disabled, onClose }) {
         <Button variation="secondary" disabled={disabled} onClick={onClose}>
           Cancel
         </Button>
-        <Button variation="danger" disabled={disabled} onClick={onConfirm}>
+        <Button variation="danger" disabled={disabled} onClick={() => {
+          onConfirm(); // 执行 confirm operation
+          onClose(); // 关闭 confirm window
+        }}>
           Delete
         </Button>
       </div>

@@ -13,7 +13,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import useBooking from "./useBooking";
 import Spinner from "../../ui/Spinner";
 import { statusToColor } from "./constants";
-import { useCheckout } from "../check-in-out/useCheckout";
+import { useCheckoutBooking } from "../check-in-out/useCheckoutBooking";
+import { useDeleteBooking } from "../check-in-out/useDeleteBooking";
+import Modal from "../../ui/Modal";
+import ConfirmDelete from "../../ui/ConfirmDelete";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -31,7 +34,15 @@ function BookingDetail() {
     isCheckoutError,
     checkoutError,
     checkoutResult,
-  } = useCheckout();
+  } = useCheckoutBooking();
+
+  const {
+    isDeleting,
+    del: deleteBooking,
+    isDeleteError,
+    deleteError,
+    deleteResult,
+  } = useDeleteBooking();
 
   if (isLoading) {
     return <Spinner />;
@@ -61,9 +72,31 @@ function BookingDetail() {
           </Button>
         )}
         {status === "checked-in" && (
-          <Button variation="primary" onClick={() => checkout(id)} disabled={isCheckingOut}>
+          <Button
+            variation="primary"
+            onClick={() => checkout(id)}
+            disabled={isCheckingOut}
+          >
             <span>check out</span>
           </Button>
+        )}
+        {/* 只有 status 为 checked-out 的 booking 才可以被删除 */}
+        {status === "checked-out" && (
+          <Modal>
+            <Modal.LaunchButton launches="confirm-delete-booking">
+              {/* Modal.LaunchButton 为其 children 注入了 props 'onClick' 来打开 launches 指定的 Modal.Content */}
+              <Button variation="primary" disabled={isDeleting}>
+                <span>delete</span>
+              </Button>
+            </Modal.LaunchButton>
+            <Modal.Content name={"confirm-delete-booking"}>
+              {/* Modal.Content 为其 children 注入了 props 'onClose' 来关闭 Modal.Content */}
+              {/* 因此 ConfirmDelete 没必要指定 props 'onClose' */}
+              <ConfirmDelete
+                onConfirm={() => deleteBooking(id, { onSettled: moveBack })}
+              />
+            </Modal.Content>
+          </Modal>
         )}
         <Button variation="secondary" onClick={moveBack}>
           Back

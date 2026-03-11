@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateBooking } from "../../services/apiBookings";
 import toast from "react-hot-toast";
 
-export function useCheckout() {
+export function useCheckoutBooking() {
   const queryClient = useQueryClient();
   const { mutate, isPending, data, isError, error } = useMutation({
     mutationFn: (bookingId) => {

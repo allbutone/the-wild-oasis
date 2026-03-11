@@ -3,7 +3,7 @@ import { updateBooking } from "../../services/apiBookings";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-export function useCheckin() {
+export function useCheckinBooking() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   // 其实 checkin 的本质就是修改 booking.status 为 'checked-in'
