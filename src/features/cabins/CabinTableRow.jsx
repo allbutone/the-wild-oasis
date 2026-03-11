@@ -12,7 +12,6 @@ import {
 import { useCreateOrUpdateCabin } from "./useCreateOrUpdateCabin";
 import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
-import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
 
 const Img = styled.img`
@@ -101,7 +100,7 @@ export default function CabinTableRow({ cabin }) {
   }
 
   return (
-    <Table.Row>
+    <>
       {/* column1 */}
       <Img src={image} />
       {/* column2 */}
@@ -159,6 +158,6 @@ export default function CabinTableRow({ cabin }) {
           </Modal.Content>
         </Modal>
       </div>
-    </Table.Row>
+    </>
   );
 }

@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { format, isToday } from "date-fns";
 
 import Tag from "../../ui/Tag";
-import Table from "../../ui/Table";
 
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
@@ -80,7 +79,7 @@ function BookingRow({
   // map status to color, status 只能是 'unconfirmed'/'checked-in'/'checked-out'
 
   return (
-    <Table.Row>
+    <>
       {/* column1 */}
       <Cabin>
         {cabinName}(id:{bookingId})
@@ -158,7 +157,7 @@ function BookingRow({
           <ConfirmDelete onConfirm={() => deleteBooking(bookingId)} />
         </Modal.Content>
       </Modal>
-    </Table.Row>
+    </>
   );
 }
 

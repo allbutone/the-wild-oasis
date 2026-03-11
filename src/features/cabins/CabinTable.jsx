@@ -17,9 +17,9 @@ export default function CabinTable() {
   if (isLoading) {
     return <Spinner></Spinner>;
   }
-  if(!data.length){
+  if (!data.length) {
     // 如果加载完毕后, 没有数据, 就展示 Empty 组件
-    return <Empty resource={'cabins'}/>
+    return <Empty resource={"cabins"} />;
   }
   if (isError) {
     toast.error(error.message);
@@ -99,7 +99,11 @@ export default function CabinTable() {
             // data={data}
             // 测试 data 为空时, 是否展示 <Empty />
             // data={[]}
-            render={(cabin) => <CabinTableRow cabin={cabin} key={cabin.id} />}
+            render={(cabin) => (
+              <Table.Row key={cabin.id}>
+                <CabinTableRow cabin={cabin}  />
+              </Table.Row>
+            )}
           />
           <Table.Footer>
             <span>this is table footer for test purpose</span>
