@@ -10,7 +10,7 @@ export function useUpdateSetting(){
       toast.success(
         `successfully updated setting!`,
       );
-      queryClient.invalidateQueries({ queryKey: ["setting"] });
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
     },
     // err 是 mutationFn 执行时产生的 error instance
     onError: (err) =>

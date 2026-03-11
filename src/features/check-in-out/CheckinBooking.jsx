@@ -15,6 +15,7 @@ import Checkin from "../../pages/Checkin";
 import Checkbox from "../../ui/Checkbox";
 import { formatCurrency } from "../../utils/helpers";
 import { useCheckin } from "./useCheckin";
+import { useSettings } from "../settings/useSettings";
 
 const Box = styled.div`
   /* Box */
@@ -27,57 +28,109 @@ const Box = styled.div`
 function CheckinBooking() {
   const moveBack = useMoveBack();
   const { isLoading, booking, isError, error } = useBooking();
+  const {
+    isLoading: isLoadingSettings,
+    data: settings = {}, // 指定初始值为  {}, 否则初始值为 undefined 时会造成解构报错
+    isError: isSettingError,
+    error: settingError,
+  } = useSettings();
 
-  // state associated with controlled checkbox
+  // 记录 customer 是否已经付款
+  // total price = cabinPrice(人数*每晚价格) + extrasPrice(人数*多少晚*早餐价格)
   const [confirmPaid, setConfirmPaid] = useState(false);
 
-  const {checkin, isCheckingIn, isCheckingError, checkInError} = useCheckin();
+  // 记录 customer 是否需要订早餐
+  const [needBreakfast, setNeedBreakfast] = useState(false);
 
-  // 当 booking 加载完毕后, 需要将 state 'confirmPaid' 和 booking.isPaid 进行同步
+  const { checkin, isCheckingIn, isCheckingError, checkInError } = useCheckin();
+
+  // 当 booking 加载完毕后, 需要:
+  // 1. 将 state 'confirmPaid' 和 booking.isPaid 进行同步
+  // 2. 将 state 'needBreakfast' 和 booking.hasBreakfast 进行同步
   useEffect(() => {
-    // 当 component mount 的时候, 会执行一次 setup fn, 此时 booking 依然是 undefined
+    // booking is undefined when initially mounted
     if (booking) {
-      setConfirmPaid(booking.isPaid);
+      setConfirmPaid(booking.isPaid); // 勾选 "has paid" checkbox
+      setNeedBreakfast(booking.hasBreakfast); // 勾选 "order breakfast" checkbox
     }
   }, [booking]);
 
-  if (isLoading) {
+  if (isLoading || isLoadingSettings) {
     return <Spinner />;
   }
 
-  const {
-    id: bookingId,
-    guests,
-    totalPrice,
-    numGuests,
-    hasBreakfast,
-    numNights,
-  } = booking;
+  // destruction 的缺点:
+  // 使用 `booking.numGuests` 更清楚归属关系
+  // 但使用 destructure 出来的 `numGuests` 就不知道来自哪里了
+  const totalPriceForBreakfast =
+    settings.breakfastPrice * booking.numGuests * booking.numNights;
 
   function handleCheckin() {
-    checkin(booking.id);
+    // 付款后才能 checkin
+    if (confirmPaid) {
+      const commonUpdate = {
+        isPaid: true, // 已经付款才能 checkin, 因此 isPaid 需要更新为 true
+        status: "checked-in",
+      };
+      if (!booking.hasBreakfast && needBreakfast) {
+        // 如果之前没有预订早饭, 但现在(checkin 时)预订了
+        checkin({
+          bookingId: booking.id,
+          fieldsToUpdate: {
+            // cabinPrice: booking.cabinPrice, // cabin 费用不变, 无需更新
+            extrasPrice: totalPriceForBreakfast, // 更新早饭费用
+            hasBreakfast: true,
+            totalPrice: booking.cabinPrice + totalPriceForBreakfast, // 更新总费用
+            ...commonUpdate,
+          },
+        });
+      } else {
+        checkin({ bookingId: booking.id, fieldsToUpdate: { ...commonUpdate } });
+      }
+    }
   }
 
   return (
     <>
       <StyledRow type="horizontal">
-        <Heading as="h1">Check in booking #{bookingId}</Heading>
+        <Heading as="h1">Check in booking #{booking.id}</Heading>
         <ButtonText onClick={moveBack}>&larr; Back</ButtonText>
       </StyledRow>
 
       <BookingDataBox booking={booking} />
+
+      <Checkbox
+        id="breakfast"
+        checked={needBreakfast}
+        onChange={() => {
+          // 如果 booking.hasBreakfast 是 true, 那么 needBreakfast 为 true, "order breakfast" checkbox 默认是无法勾选的
+          // 如果 booking.hasBreakfast 为 false, 那么 needBreakfast 为 false, "order breakfast" checkbox 可以勾选
+          //     此时 "order breakfast" checkbox 在 on change 时, 需要将 needBreakfast 设置为 true
+          setNeedBreakfast(true);
+          // 之后需要将 "has paid" checkbox 反选, 以便确认 customer 支付的价格包含了 breakfast
+          setConfirmPaid(false);
+        }}
+        disabled={needBreakfast}
+      >
+        order breakfast for {formatCurrency(totalPriceForBreakfast)} (
+        {formatCurrency(settings.breakfastPrice)} * {booking.numGuests}guests *{" "}
+        {booking.numNights}nights)
+      </Checkbox>
       <Checkbox
         id="confirm"
         checked={confirmPaid}
         onChange={() => setConfirmPaid((v) => !v)}
         disabled={confirmPaid}
       >
-        customer {guests.fullName} has paid {formatCurrency(totalPrice)}
+        customer {booking.guests.fullName} has paid
+        {needBreakfast
+          ? `${formatCurrency(booking.cabinPrice + totalPriceForBreakfast)} for cabin ${formatCurrency(booking.cabinPrice)} and breakfast ${formatCurrency(totalPriceForBreakfast)}`
+          : `${formatCurrency(booking.cabinPrice)} (for cabin)`}
       </Checkbox>
 
       <ButtonGroup>
         <Button onClick={handleCheckin} disabled={!confirmPaid || isCheckingIn}>
-          Check in booking #{bookingId}
+          Check in booking #{booking.id}
         </Button>
         <Button variation="secondary" onClick={moveBack}>
           Back

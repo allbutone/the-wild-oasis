@@ -9,11 +9,8 @@ export function useCheckin() {
   // 其实 checkin 的本质就是修改 booking.status 为 'checked-in'
   // 为此需要使用 react-query 来 mutate booking
   const { mutate, isPending, data, isError, error } = useMutation({
-    mutationFn: (id) => {
-      return updateBooking(id, {
-        status: "checked-in",
-        isPaid: true,
-      });
+    mutationFn: ({ bookingId, fieldsToUpdate }) => {
+      return updateBooking(bookingId, fieldsToUpdate);
     },
     onSuccess: (result) => {
       toast.success(`booking of id ${result.id} successfully checked in!`);
@@ -39,16 +36,16 @@ export function useCheckin() {
       // queryClient.invalidateQueries({type: 'all', refetchType: 'active'});
 
       // option 'type' 和 option 'refetchType' 组合使用 (1)
-      // invalidate active queries, then refetch active ones among them 
+      // invalidate active queries, then refetch active ones among them
       // 效果: 发起 invalidate 的页面的数据实时更新, 其他页面不一定及时刷新
       // queryClient.invalidateQueries({ type: "active", refetchType: "active" });
       //
       // option 'type' 和 option 'refetchType' 组合使用 (2)
-      // invaliate all queries, then refetch all of them 
+      // invaliate all queries, then refetch all of them
       // 效果: 所有页面的数据都实时更新
       queryClient.invalidateQueries({ type: "all", refetchType: "all" });
 
-      // navigate back to the dashboard
+      // checkin 后需要: navigate back to the dashboard
       // navigate("/");
     },
     onError: (err) => {

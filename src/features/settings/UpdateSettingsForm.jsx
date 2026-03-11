@@ -2,7 +2,7 @@ import StyledForm from "../../ui/StyledForm";
 import { StyledFormRow } from "../../ui/StyledFormRow";
 import Input from "../../ui/Input";
 import Spinner from "../../ui/Spinner";
-import { useSetting } from "./useSetting";
+import { useSettings } from "./useSettings";
 import { StyledFormLabel } from "../../ui/StyledFormLabel";
 import { useUpdateSetting } from "./useUpdateSetting";
 import toast from "react-hot-toast";
@@ -14,7 +14,7 @@ function UpdateSettingsForm() {
     data = {}, // 指定初始值为  {}, 否则初始值为 undefined 时会造成解构报错
     isError,
     error,
-  } = useSetting();
+  } = useSettings();
   const {
     minBookingLength,
     maxBookingLength,
