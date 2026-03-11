@@ -33,40 +33,20 @@ export async function createOrUpdateCabin(cabin) {
     cabin.image = uploadResult.signedUrl;
   }
   // 此时: cabin.image 一定是 signed url, 可能是之前的 signed url, 也可能是上传后重新获取的 signed url
+  let query = supabase.from("cabins");
   if (cabin.id === undefined) {
-    // 需要 create cabin, 此时:
-    // uploadResult 一定有值, 其内的 key 'signedUrl' 和 'path' 都可以使用
-    const { data, error } = await supabase
-      .from("cabins")
-      .insert([cabin])
-      .select() //得到 modified rows
-      .single(); //得到 first modified row
-
-    if (error) {
-      // cabin row create 失败, 那么之前上传的 cabin image 也就没有意义了
-      await supabase.storage.from("cabin-images").remove([uploadResult.path]);
-      throw new Error(`failed to create cabin row due to ${error.message}`);
-    }
-    return data;
+    query = query.insert([cabin]);
   } else {
-    // 需要 update cabin, 此时:
-    // uploadResult 可能有值(用户重新指定了 image), 也可能没值(用户未重新指定 image)
-    const { data, error } = await supabase
-      .from("cabins")
-      .update(cabin)
-      .eq("id", cabin.id)
-      .select()
-      .single();
-    if (error) {
-      // cabin row update 失败
-      if (uploadResult !== undefined) {
-        // 如果之前上传了 cabin image, 就没有意义了
-        await supabase.storage.from("cabin-images").remove([uploadResult.path]);
-      }
-      throw new Error(`failed to update cabin row due to ${error.message}`);
-    }
-    return data;
+    query = query.update(cabin).eq("id", cabin.id);
   }
+  const { data, error } = await query.select().single();
+  if (error) {
+    if (uploadResult !== undefined) {
+      await supabase.storage.from("cabin-images").remove([uploadResult.path]);
+    }
+    throw new Error(`error occurred due to ${error.message}`);
+  }
+  return data;
 }
 
 async function uploadFile(file) {
@@ -101,9 +81,7 @@ async function uploadFile(file) {
     .createSignedUrl(path, 1 * 365 * 24 * 60 * 60); // 有效期 1 年, 单位: 秒
 
   if (urlError) {
-    throw new Error(
-      `failed to retrieve signed url of file located at ${path}`,
-    );
+    throw new Error(`failed to retrieve signed url of file located at ${path}`);
   }
 
   return { signedUrl: urlData.signedUrl, path: path };
