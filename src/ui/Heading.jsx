@@ -20,18 +20,28 @@ const Heading = styled.h1`
     switch (props.as) {
       case "h1":
         return css`
-          font-size: 30px;
+          font-size: 3rem;
+          font-weight: 600;
         `;
       case "h2":
         return css`
-          font-size: 25px;
+          font-size: 3rem;
+          font-weight: 600;
         `;
       case "h3":
         return css`
-          font-size: 20px;
+          font-size: 3rem;
+          font-weight: 500;
+        `;
+      case "h4":
+        return css`
+          font-size: 2rem;
+          font-weight: 500;
+          text-align: center;
         `;
     }
   }}
+  line-height: 1.8
 `;
 
 export default Heading;
