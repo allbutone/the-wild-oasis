@@ -242,7 +242,7 @@ function CabinForm({ cabin, onClose }) {
 
       <StyledFormRow>
         {/* type is an HTML attribute! */}
-        <Button variation="secondary" type="reset" onClick={() => onClose?.()}>
+        <Button $variation="secondary" type="reset" onClick={() => onClose?.()}>
           Cancel
         </Button>
         <Button disabled={isPending}>{isUpdate ? "Edit" : "Add"}</Button>

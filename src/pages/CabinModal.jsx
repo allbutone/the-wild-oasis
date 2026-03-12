@@ -11,7 +11,7 @@ export default function CabinModal() {
         {/* modal launch button 负责 launch modal content */}
         <Modal.LaunchButton launches="cabin-form">
           {/* custom modal launch button */}
-          <Button variation="primary">add cabin</Button>
+          <Button $variation="primary">add cabin</Button>
         </Modal.LaunchButton>
         {/* modal content 默认不显示 */}
         <Modal.Content name="cabin-form">
@@ -27,7 +27,7 @@ export default function CabinModal() {
         {/* 测试如下: */}
         {/* 
         <Modal.LaunchButton shows="cabin-table">
-          <Button variation="primary">show cabins</Button>
+          <Button $variation="primary">show cabins</Button>
         </Modal.LaunchButton>
         <Modal.Content name="cabin-table">
           <CabinTable />

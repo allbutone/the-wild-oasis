@@ -65,7 +65,7 @@ function BookingDetail() {
       <ButtonGroup>
         {status === "unconfirmed" && (
           <Button
-            variation="primary"
+            $variation="primary"
             onClick={() => navigate(`/checkin/${id}`)}
           >
             Go To Checkin
@@ -73,7 +73,7 @@ function BookingDetail() {
         )}
         {status === "checked-in" && (
           <Button
-            variation="primary"
+            $variation="primary"
             onClick={() => checkout(id)}
             disabled={isCheckingOut}
           >
@@ -85,7 +85,7 @@ function BookingDetail() {
           <Modal>
             <Modal.LaunchButton launches="confirm-delete-booking">
               {/* Modal.LaunchButton 为其 children 注入了 props 'onClick' 来打开 launches 指定的 Modal.Content */}
-              <Button variation="primary" disabled={isDeleting}>
+              <Button $variation="primary" disabled={isDeleting}>
                 <span>delete</span>
               </Button>
             </Modal.LaunchButton>
@@ -98,7 +98,7 @@ function BookingDetail() {
             </Modal.Content>
           </Modal>
         )}
-        <Button variation="secondary" onClick={moveBack}>
+        <Button $variation="secondary" onClick={moveBack}>
           Back
         </Button>
       </ButtonGroup>
