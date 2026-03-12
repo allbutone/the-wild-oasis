@@ -16,7 +16,7 @@ const FilterButton = styled.button`
   border: none;
 
   ${(props) => {
-    if (props.active) {
+    if (props.$active) {
       return css`
         background-color: var(--color-brand-600);
         color: var(--color-brand-50);
@@ -69,7 +69,7 @@ export default function Filter({ fieldName, options }) {
           key={option.value}
           // 如果 FilterButton 被点击了, 就添加 active 样式做区分
           // FilterButton 需要 props 'active' 来动态添加 active style
-          active={currentValue === option.value}
+          $active={currentValue === option.value}
           onClick={() => {
             setSearchParams((prevParams) => {
               prevParams.set(fieldName, option.value);
