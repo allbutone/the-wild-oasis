@@ -64,7 +64,7 @@ function CabinForm({ cabin, onClose }) {
   }
   return (
     // 如果 parent 提供了 props 'onClose', 那么 StyledForm 的 type 为 'modal' (在 modal 中展示的 form), 否则为 'regular' (常规 form)
-    <StyledForm onSubmit={handleSubmit(onSubmit, onError)} type={onClose ? 'modal' : 'regular'}>
+    <StyledForm onSubmit={handleSubmit(onSubmit, onError)} $type={onClose ? 'modal' : 'regular'}>
       <StyledFormRow>
         <StyledFormLabel htmlFor="name">Name</StyledFormLabel>
         {/* 参考 https://react-hook-form.com/docs/useform/register 可知: */}

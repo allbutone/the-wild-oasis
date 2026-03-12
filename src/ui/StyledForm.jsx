@@ -4,7 +4,7 @@ import styled, { css } from "styled-components";
 // StyledForm 的 props 'type' 为 regular 时, 表示: 没有在 modal 内展示 StyledForm
 const StyledForm = styled.form`
   ${(props) =>
-    props.type === "regular" &&
+    props.$type === "regular" &&
     css`
       padding: 2.4rem 4rem;
 
@@ -15,7 +15,7 @@ const StyledForm = styled.form`
     `}
 
   ${(props) =>
-    props.type === "modal" &&
+    props.$type === "modal" &&
     css`
       width: 80rem;
     `}
