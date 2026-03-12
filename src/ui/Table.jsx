@@ -12,7 +12,7 @@ const StyledTable = styled.div`
 
 const CommonRow = styled.div`
   display: grid;
-  grid-template-columns: ${(props) => props.columns};
+  grid-template-columns: ${(props) => props.$columns};
   column-gap: 2.4rem;
   align-items: center;
   transition: none;
@@ -63,20 +63,20 @@ const Empty = styled.p`
 
 const TableContext = createContext();
 // props 'columns' 的值为 `grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;` 中的 `0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;`
-export default function Table({ children, columns }) {
+export default function Table({ children, $columns }) {
   return (
-    <TableContext.Provider value={{ columns }}>
+    <TableContext.Provider value={{ $columns }}>
       <StyledTable>{children}</StyledTable>
     </TableContext.Provider>
   );
 }
 
 function Header({ children }) {
-  const { columns } = useContext(TableContext);
+  const { $columns } = useContext(TableContext);
 
   //StyledHeader 继承自 CommonRow, 而 CommonRow 中用到了 props.columns, 因此需要指定 props 'columns' 如下:
   return (
-    <StyledHeader columns={columns} as="header">
+    <StyledHeader $columns={$columns} as="header">
       {children}
     </StyledHeader>
   );
@@ -93,9 +93,9 @@ function Body({ data, render }) {
 Table.Body = Body;
 
 function Row({ children }) {
-  const { columns } = useContext(TableContext);
+  const { $columns } = useContext(TableContext);
   //StyledRow 继承自 CommonRow, 而 CommonRow 中用到了 props.columns, 因此需要指定 props 'columns' 如下:
-  return <StyledRow columns={columns}>{children}</StyledRow>;
+  return <StyledRow $columns={$columns}>{children}</StyledRow>;
 }
 Table.Row = Row;
 
