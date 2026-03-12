@@ -11,7 +11,6 @@ export default function CabinTable() {
   // 根据 search param `discount` 的值来 filter 数据(cabins)
   const [searchParams] = useSearchParams();
   const discount = searchParams.get("discount");
-  console.log(discount);
 
   const { isLoading, data, isError, error } = useCabins();
   if (isLoading) {
@@ -38,8 +37,8 @@ export default function CabinTable() {
     default:
       filteredCabins = data;
   }
-  console.log(`filtered cabins: `);
-  console.log(filteredCabins);
+  // console.log(`filtered cabins: `);
+  // console.log(filteredCabins);
 
   // 对过滤后的数据进行排序(sort):
   const sortBy = searchParams.get("sortBy") || "none";
