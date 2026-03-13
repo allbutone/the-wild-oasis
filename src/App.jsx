@@ -29,6 +29,7 @@ export default function App() {
       <GlobalStyles />
       <BrowserRouter>
         <Routes>
+          <Route path="test" element={<div>test!</div>}></Route>
           <Route
             element={
               <ProtectedRoute>

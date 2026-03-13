@@ -12,8 +12,8 @@ export default function useLogin() {
   const { mutate, isPending, data, isError, error } = useMutation({
     mutationFn: ({ email, password }) => loginWithPassword({ email, password }),
     onSuccess: (data) => {
-      console.log(`successfully logged in!`)
-      console.log(`login result:`)
+      console.log(`successfully logged in!`);
+      console.log(`login result:`);
       console.log(data);
 
       // when user click button 'login':
@@ -28,10 +28,10 @@ export default function useLogin() {
       // 如果在获取到 data 后, 直接将 data.user 存储到 cache 'user' 内 (如下)
       // 那么 step-2 的 useUser() 就可以直接从 cache 'user' 中获取 user, 而无需执行 async queryFn
       // 来获取了, 这样没有 async query 过程, 也就不会展示多余的 <FullPage><Spinner /></FullPage> 了
-      queryClient.setQueryData(['user'], data.user);
+      queryClient.setQueryData(["user"], data.user);
 
       // 登录成功后, 需要 redirect 到 /dashboard, 对应的 Dashboard 被 ProtectedRoute 包裹
-      navigate('/dashboard');
+      navigate("/dashboard", { replace: true });
     },
     onError: (error) => {
       console.log(error.message);
