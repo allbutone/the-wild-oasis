@@ -3,15 +3,20 @@ import Button from "../../ui/Button";
 import StyledForm from "../../ui/StyledForm";
 import Input from "../../ui/Input";
 import FormRow from "../../ui/StyledFormRow";
-import { loginWithPassword } from "../../services/apiAuth";
 import useLogin from "./useLogin";
 import SpinnerMini from "../../ui/SpinnerMini";
 
 function LoginForm() {
   const { login, isLoggingIn, loginResult, isLoginError, loginError } =
     useLogin();
-  const [email, setEmail] = useState("test@test.com"); // 为了测试方便, 直接将 username 作为 default value
-  const [password, setPassword] = useState("test"); // 为了测试方便, 直接将 password 作为 default value
+
+  // 为了测试方便, 直接将 username 作为 default value
+  const [email, setEmail] = useState("test@test.com");
+
+  // 为了测试方便, 直接将 password 作为 default value
+  // 密码不要设置为 'test' 这类过于简单的, 否则测试的
+  // 时候 chrome 总是弹出 alert window 提醒 password breached, 很烦
+  const [password, setPassword] = useState("random4test");
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -19,7 +24,16 @@ function LoginForm() {
       return; // 如果 email 或 password 没有填, 就直接 return
     }
 
-    login({ email, password });
+    login(
+      { email, password },
+      {
+        onSettled: () => {
+          // 无论 login 成功与否, 都重置表单
+          setEmail("");
+          setPassword("");
+        },
+      },
+    );
   }
 
   return (

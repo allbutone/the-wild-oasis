@@ -14,10 +14,11 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
 import Booking from "./pages/Booking";
 import Checkin from "./pages/Checkin";
+import ProtectedRoute from "./features/authentication/ProtectedRoute";
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { staleTime: 60 * 1000 }, // 将 query 的 stale time 设置为 1 分钟
+    queries: { staleTime: 10 * 1000 }, // 将 query 的 stale time 设置为 10s
   },
 });
 export default function App() {
@@ -28,7 +29,13 @@ export default function App() {
       <GlobalStyles />
       <BrowserRouter>
         <Routes>
-          <Route element={<AppLayout />}>
+          <Route
+            element={
+              <ProtectedRoute>
+                <AppLayout />
+              </ProtectedRoute>
+            }
+          >
             {/* <Route index element={<Dashboard />}></Route> */}
             {/* Navigate 是 useNavigate 的 declarative version, 如下, 其中 props.replace 如未赋值, 将会是 true */}
             <Route
