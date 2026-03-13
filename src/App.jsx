@@ -29,7 +29,6 @@ export default function App() {
       <GlobalStyles />
       <BrowserRouter>
         <Routes>
-          <Route path="test" element={<div>test!</div>}></Route>
           <Route
             element={
               <ProtectedRoute>
@@ -43,6 +42,14 @@ export default function App() {
               index
               element={<Navigate replace to={"dashboard"} />}
             ></Route>
+
+            {/* supabase.auth.signUp({ email, password, options: { emailRedirectTo: 'http://localhost:5173/dashboard' } }); */}
+            {/* 中的 emailRedirectTo 表示: 点击 confirmation email 中的 verify link 后, 应跳转到 /dashboard */}
+            {/* verify link 长这个样子: https://zzudlfaityyrmtxwajxy.supabase.co/auth/v1/verify?token=xxx&type=signup&redirect_to=http://localhost:5173/dashboard */}
+            {/* 之所以选择 /dashboard 作为 auth callback page, 是因为: */}
+            {/* /dashboard 对应的 Dashboard 内间接 import 了 supabase client variable `supabase` */}
+            {/* 该 variable 是通过 createClient 初始化而来的, 初始化过程中会从 verify link 中提取 token 并将 current session 存储到 local storage */}
+            {/* 此时也就完成了 authentication, 和通过 login form 进行登录的本质是相同的, 最终都是将 current session 存储到 local storage  */}
             <Route path="dashboard" element={<Dashboard />}></Route>
             <Route path="account" element={<Account />}></Route>
             <Route path="bookings" element={<Bookings />}></Route>

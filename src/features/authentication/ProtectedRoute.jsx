@@ -1,12 +1,14 @@
-import { useEffect } from "react";
+import { createContext, useContext, useEffect } from "react";
 import Spinner from "../../ui/Spinner";
-import useUser from "./useUser";
+import useGetUser from "./useGetUser";
 import { useNavigate } from "react-router-dom";
 import FullPage from "../../ui/FullPage";
 
+const UserContext = createContext();
+
 // ProtectedRoute 的作用: 获取 authenticated user, 如果没有, 就跳转到 /login 要求登录
 export default function ProtectedRoute({ children }) {
-  const { isLoadingUser, user, isUserError, userError } = useUser();
+  const { isLoadingUser, user, isUserError, userError } = useGetUser();
   console.log("inside component: ", isLoadingUser, user); // 解构出来的 isLoadingUser 默认为 true, user 默认为 undefined
 
   const navigate = useNavigate();
@@ -30,12 +32,11 @@ export default function ProtectedRoute({ children }) {
       // 这样的话, login 成功后, /dashboard 通过 useUser() 从 cache 'user' 获取到的 user 就是 null, 导致又 navigate 到 /login
       //
       // 解决办法:
-      // step-3 中, 在点 "login" 进行测试之前, 先删掉 cache 'user' 即可恢复正常
+      // 在测试 step-3 前, 先删掉 cache 'user' 即可解决
       //
       // 为避免同样的问题, 实际 logout 时应该:
       // 1. 删除 local storage 中的 current user session
       // 2. queryClient.removeQueries({ queryKey: ['user'] }); 而非 queryClient.invalidateQueries({queryKey: ['user'], refetchType: 'active'});
-      // 因为后者同样会立刻触发 refetch 让 cache 'user' 的值变为 null, 导致在 staleTime 内点 'login' 仍然会停留在 /login 页面
     }
   }, [isLoadingUser, user, navigate]);
 
@@ -56,6 +57,15 @@ export default function ProtectedRoute({ children }) {
   // user 可能是 null
   if (user?.role === "authenticated") {
     console.log(`user is authenticated, openning the door...`);
-    return children;
+    return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
   }
+}
+
+export function useCurrentUser() {
+  const contextValue = useContext(UserContext);
+  if (contextValue === undefined) {
+    console.log(`hook 'useUser' should be used under ProtectedRoute`);
+    return;
+  }
+  return contextValue;
 }

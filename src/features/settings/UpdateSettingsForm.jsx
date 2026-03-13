@@ -30,7 +30,7 @@ function UpdateSettingsForm() {
   function handleBlur(e, fieldName) {
     const fieldValue = e.target.value;
     // 如果 field value 并未发生修改, 什么都不做, 直接 return;
-    if (String(data[fieldName]) === e.target.value) {
+    if (String(data[fieldName]) === fieldValue) {
       return;
     }
     setChangedField(fieldName);

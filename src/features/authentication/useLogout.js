@@ -21,12 +21,12 @@ export default function useLogout() {
       // remove all react-query cache, 尤其是 cache 'user'
       queryClient.removeQueries(); // 不指定 arg 表示: remove all queries
 
-      // 假定访问流程为: /login -navigate1-> /dashboard -> /logout -navigate2-> /login
+      // 假定访问流程为: /login -> click login -navigate1-> /dashboard -> click logout -navigate2-> /login
       //
       // 当 user 被 navigate1 重定向到 /dashboard 时, user 不该通过 history back 回到 /login 重新登录
       // 因此 navigate1 应该指定 replace: true
       //
-      // 当 user 被 navigate2 重定向到 /login 时, user 不该通过 history back 回到 /logout 重新退出
+      // 当 user 被 navigate2 重定向到 /login 时, user 不该通过 history back 回到 /dashboard 
       // 因此 navigate2 应该指定 replace: true
       navigate("/login", { replace: true }); // replace: true 表示使用 destination url 替换掉 history stack 中的 current entry
     },

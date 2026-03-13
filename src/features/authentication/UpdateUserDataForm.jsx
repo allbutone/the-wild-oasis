@@ -6,7 +6,7 @@ import StyledForm from "../../ui/StyledForm";
 import FormRow from "../../ui/StyledFormRow";
 import Input from "../../ui/Input";
 
-import { useUser } from "./useUser";
+import { useUser } from "./useGetUser";
 
 function UpdateUserDataForm() {
   // We don't need the loading state, and can immediately use the user data, because we know that it has already been loaded at this point

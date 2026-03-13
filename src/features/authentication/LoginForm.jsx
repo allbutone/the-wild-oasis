@@ -11,12 +11,12 @@ function LoginForm() {
     useLogin();
 
   // 为了测试方便, 直接将 username 作为 default value
-  const [email, setEmail] = useState("test@test.com");
+  const [email, setEmail] = useState("zaxitu@denipl.net"); // 使用 https://tempmailo.com/ 提供的 random email 来作为 userName 和 email
 
   // 为了测试方便, 直接将 password 作为 default value
   // 密码不要设置为 'test' 这类过于简单的, 否则测试的
   // 时候 chrome 总是弹出 alert window 提醒 password breached, 很烦
-  const [password, setPassword] = useState("random4test");
+  const [password, setPassword] = useState("zaxitu@denipl.net"); // 使用 https://tempmailo.com/ 提供的 random email 来作为 password
 
   function handleSubmit(e) {
     e.preventDefault();
