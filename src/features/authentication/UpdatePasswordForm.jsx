@@ -4,7 +4,7 @@ import StyledForm from "../../ui/StyledForm";
 import FormRow from "../../ui/StyledFormRow";
 import Input from "../../ui/Input";
 
-import { useUpdateUser } from "./useUpdateUser";
+// import { useUpdateUser } from "./useUpdateUser";
 
 function UpdatePasswordForm() {
   const { register, handleSubmit, formState, getValues, reset } = useForm();

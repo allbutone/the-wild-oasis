@@ -13,6 +13,7 @@ const StyledAvatarContainer = styled.div`
 const StyledAvatar = styled.img`
   display: block;
   width: 3.6rem;
+  height: 3.6rem;
   aspect-ratio: 1;
   object-fit: cover;
   object-position: center;

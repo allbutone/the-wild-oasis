@@ -1,3 +1,4 @@
+import { uploadFile } from "./apiFile";
 import supabase from "./supabase";
 
 export async function getCabins() {
@@ -29,7 +30,8 @@ export async function createOrUpdateCabin(cabin) {
   if (typeof cabin.image !== "string") {
     // 此时 image 是 File instance, 需要 upload image to supabase storage
     // 并将返回的 signed url 赋值给 cabin.image
-    uploadResult = await uploadFile(cabin.image[0]);
+    const file = cabin.image[0];
+    uploadResult = await uploadFile('cabin-images', file, file.name.replace('/', ''));
     cabin.image = uploadResult.signedUrl;
   }
   // 此时: cabin.image 一定是 signed url, 可能是之前的 signed url, 也可能是上传后重新获取的 signed url
@@ -49,40 +51,3 @@ export async function createOrUpdateCabin(cabin) {
   return data;
 }
 
-async function uploadFile(file) {
-  // 替换 image name 中可能有的 '/', 防止 supabase 自动生成 subfolder
-  // 如果确实需要将 image 存放在 bucket 下指定 subfolder 内, 那么 imagePath 内包含 '/' 是正常的
-  const path = `${file.name}`.replace("/", ""); // 相对于 bucket root 的 path
-
-  const { data, error } = await supabase.storage
-    .from("cabin-images")
-    .exists(path);
-
-  // 如果 path 对应的 file 不存在, 就上传
-  if (!data) {
-    const { data: fileData, error: imageError } = await supabase.storage
-      .from("cabin-images")
-      .upload(path, file, {
-        cacheControl: "3600", // file 在 browser 和 supabase CDN 中缓存多久, 默认为 3600s (one hour)
-        upsert: false, // 如果 imagePath 对应的 file 已经存在, 不要覆盖, 而是直接报错
-      });
-    if (imageError) {
-      throw new Error(`failed to upload image due to:${imageError.message}`);
-    }
-    //fullPath: 带有 bucket root 的 path
-    console.log(`fileData.fullPath: ${fileData.fullPath}`); //cabin-images/0.3587953130386382-cabin-002.jpg
-    //path: 不带 bucket root 的 path
-    console.log(`fileData.path: ${fileData.path}`); //0.3587953130386382-cabin-002.jpg
-  }
-
-  // 此时 file 一定存在, 为 file 创建 signed url (带有效期的 url)
-  const { data: urlData, error: urlError } = await supabase.storage
-    .from("cabin-images")
-    .createSignedUrl(path, 1 * 365 * 24 * 60 * 60); // 有效期 1 年, 单位: 秒
-
-  if (urlError) {
-    throw new Error(`failed to retrieve signed url of file located at ${path}`);
-  }
-
-  return { signedUrl: urlData.signedUrl, path: path };
-}

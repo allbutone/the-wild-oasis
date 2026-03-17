@@ -1,3 +1,4 @@
+import { uploadFile } from "./apiFile";
 import supabase from "./supabase";
 
 export async function loginWithPassword({ email, password }) {
@@ -90,3 +91,43 @@ export async function createNewUser({ email, password, fullName }) {
   return data; // data 的结构为 {session: {}, user: {}}
 }
 
+export async function updateUser({
+  fullName,
+  avatarFile,
+  avatarStorePath,
+  password,
+}) {
+  let updateObj = {};
+  if (password) {
+    // only update password
+    updateObj.password = password;
+  } else {
+    // only update fullName and avatar
+    updateObj = { data: {} };
+    if (avatarFile) {
+      const { signedUrl } = await uploadFile(
+        "user-avatars",
+        avatarFile,
+        avatarStorePath,
+      );
+      // 根据 https://supabase.com/docs/reference/javascript/auth-updateuser 可知: key 'data' 对应 auth.users.raw_user_meta_data 列
+      // 这样 user.user_metadata 就可以从 column 'raw_user_meta_data' of table 'users' 列取值了
+      updateObj.data.avatar = signedUrl;
+    }
+    if (fullName) {
+      updateObj.data.fullName = fullName;
+    }
+  }
+  console.log(`user attributes to update: `, updateObj);
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.updateUser(updateObj);
+
+  if (error) {
+    return new Error(error.message);
+  }
+
+  return user;
+}
