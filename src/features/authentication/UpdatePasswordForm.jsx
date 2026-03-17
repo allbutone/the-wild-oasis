@@ -3,24 +3,37 @@ import Button from "../../ui/Button";
 import StyledForm from "../../ui/StyledForm";
 import FormRow from "../../ui/StyledFormRow";
 import Input from "../../ui/Input";
+import useUpdateUser from "./useUpdateUser";
 
 // import { useUpdateUser } from "./useUpdateUser";
 
 function UpdatePasswordForm() {
-  const { register, handleSubmit, formState, getValues, reset } = useForm();
+  const { register, handleSubmit, formState, reset } = useForm();
   const { errors } = formState;
 
   const { updateUser, isUpdating } = useUpdateUser();
 
+  function resetForm() {
+    // 使用 react hook form 的 reset(values) 来重置表单
+    reset({
+      password: "",
+      passwordConfirm: "",
+    });
+  }
   function onSubmit({ password }) {
-    updateUser({ password }, { onSuccess: reset });
+    updateUser(
+      { password },
+      {
+        onSuccess: resetForm,
+      },
+    );
   }
 
   return (
     <StyledForm onSubmit={handleSubmit(onSubmit)}>
       <FormRow
         label="Password (min 8 characters)"
-        error={errors?.password?.message}
+        error={errors.password?.message}
       >
         <Input
           type="password"
@@ -37,10 +50,7 @@ function UpdatePasswordForm() {
         />
       </FormRow>
 
-      <FormRow
-        label="Confirm password"
-        error={errors?.passwordConfirm?.message}
-      >
+      <FormRow label="Confirm password" error={errors.passwordConfirm?.message}>
         <Input
           type="password"
           autoComplete="new-password"
@@ -48,13 +58,18 @@ function UpdatePasswordForm() {
           disabled={isUpdating}
           {...register("passwordConfirm", {
             required: "This field is required",
-            validate: (value) =>
-              getValues().password === value || "Passwords need to match",
+            validate: (inputValue, formValues) =>
+              formValues.password === inputValue || "Passwords need to match",
           })}
         />
       </FormRow>
       <FormRow>
-        <Button onClick={reset} type="reset" $variation="secondary">
+        <Button
+          onClick={resetForm}
+          type="reset"
+          $variation="secondary"
+          disabled={isUpdating}
+        >
           Cancel
         </Button>
         <Button disabled={isUpdating}>Update password</Button>
