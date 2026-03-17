@@ -56,10 +56,16 @@ function SignupForm() {
     console.log("form data:", formData);
 
     // 提交表单, 然后重置表单
-    signUp(formData, { onSettled: reset });
+    signUp(formData, { onSettled: () => reset({
+      fullName: '',
+      email: '',
+      password: '',
+      passwordConfirm: '',
+    }) });
   }
 
   function onError(formError) {}
+
   return (
     <StyledForm onSubmit={handleSubmit(onSubmit, onError)}>
       <FormRow label="Full name" error={errors.fullName?.message}>
