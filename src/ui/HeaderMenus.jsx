@@ -1,8 +1,9 @@
-import styled from "styled-components";
+import styled  from "styled-components";
 import ButtonWithIcon from "./ButtonIcon";
-import { HiOutlineUser } from "react-icons/hi2";
+import { HiOutlineMoon, HiOutlineSun, HiOutlineUser } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import LogoutButton from "../features/authentication/LogoutButton";
+import { useDarkMode } from "../context/ThemeContext";
 
 const StyledHeaderMenus = styled.ul`
   display: flex;
@@ -12,6 +13,7 @@ const StyledHeaderMenus = styled.ul`
 `;
 export default function HeaderMenus() {
   const navigate = useNavigate();
+  const {isDarkMode, toggleTheme} = useDarkMode();
 
   return (
     <StyledHeaderMenus>
@@ -19,6 +21,11 @@ export default function HeaderMenus() {
         {/* click to show user details */}
         <ButtonWithIcon onClick={() => navigate("/account")}>
           <HiOutlineUser />
+        </ButtonWithIcon>
+      </li>
+      <li>
+        <ButtonWithIcon onClick={toggleTheme}>
+          {isDarkMode ? <HiOutlineSun /> : <HiOutlineMoon />}
         </ButtonWithIcon>
       </li>
       <li>

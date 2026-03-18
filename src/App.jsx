@@ -15,6 +15,7 @@ import { Toaster } from "react-hot-toast";
 import Booking from "./pages/Booking";
 import Checkin from "./pages/Checkin";
 import ProtectedRoute from "./features/authentication/ProtectedRoute";
+import { ThemeContextProvider } from "./context/ThemeContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,70 +24,72 @@ const queryClient = new QueryClient({
 });
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={true} />
-      {/* 开发项目之前, 使用 GlobalStyles 来重置样式 */}
-      <GlobalStyles />
-      <BrowserRouter>
-        <Routes>
-          <Route
-            element={
-              <ProtectedRoute>
-                <AppLayout />
-              </ProtectedRoute>
-            }
-          >
-            {/* <Route index element={<Dashboard />}></Route> */}
-            {/* Navigate 是 useNavigate 的 declarative version, 如下, 其中 props.replace 如未赋值, 将会是 true */}
+    <ThemeContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen={true} />
+        {/* 开发项目之前, 使用 GlobalStyles 来重置样式 */}
+        <GlobalStyles />
+        <BrowserRouter>
+          <Routes>
             <Route
-              index
-              element={<Navigate replace to={"dashboard"} />}
-            ></Route>
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            >
+              {/* <Route index element={<Dashboard />}></Route> */}
+              {/* Navigate 是 useNavigate 的 declarative version, 如下, 其中 props.replace 如未赋值, 将会是 true */}
+              <Route
+                index
+                element={<Navigate replace to={"dashboard"} />}
+              ></Route>
 
-            {/* supabase.auth.signUp({ email, password, options: { emailRedirectTo: 'http://localhost:5173/dashboard' } }); */}
-            {/* 中的 emailRedirectTo 表示: 点击 confirmation email 中的 verify link 后, 应跳转到 /dashboard */}
-            {/* verify link 长这个样子: https://zzudlfaityyrmtxwajxy.supabase.co/auth/v1/verify?token=xxx&type=signup&redirect_to=http://localhost:5173/dashboard */}
-            {/* 之所以选择 /dashboard 作为 auth callback page, 是因为: */}
-            {/* /dashboard 对应的 Dashboard 内间接 import 了 supabase client variable `supabase` */}
-            {/* 该 variable 是通过 createClient 初始化而来的, 初始化过程中会从 verify link 中提取 token 并将 current session 存储到 local storage */}
-            {/* 此时也就完成了 authentication, 和通过 login form 进行登录的本质是相同的, 最终都是将 current session 存储到 local storage  */}
-            <Route path="dashboard" element={<Dashboard />}></Route>
-            <Route path="account" element={<Account />}></Route>
-            <Route path="bookings" element={<Bookings />}></Route>
-            <Route path="bookings/:bookingId" element={<Booking />}></Route>
-            <Route path="checkin/:bookingId" element={<Checkin />}></Route>
-            <Route path="cabins" element={<Cabins />}></Route>
-            <Route path="users" element={<NewUsers />}></Route>
-            <Route path="settings" element={<Settings />}></Route>
-          </Route>
-          <Route path="login" element={<Login />}></Route>
-          <Route path="*" element={<PageNotFound />}></Route>
-        </Routes>
-      </BrowserRouter>
-      {/* 具体如何调整 toast 的样式, 请参考: https://react-hot-toast.com/docs/styling */}
-      {/* toast 的 position 默认为 fixed, 可通过 containerStyle 修改 */}
-      {/* toaster 下可以有多个 toast, 这些 toast 之间的 gutter 可以通过 prop 'gutter' 调整, 单位默认为 px */}
-      {/* 
+              {/* supabase.auth.signUp({ email, password, options: { emailRedirectTo: 'http://localhost:5173/dashboard' } }); */}
+              {/* 中的 emailRedirectTo 表示: 点击 confirmation email 中的 verify link 后, 应跳转到 /dashboard */}
+              {/* verify link 长这个样子: https://zzudlfaityyrmtxwajxy.supabase.co/auth/v1/verify?token=xxx&type=signup&redirect_to=http://localhost:5173/dashboard */}
+              {/* 之所以选择 /dashboard 作为 auth callback page, 是因为: */}
+              {/* /dashboard 对应的 Dashboard 内间接 import 了 supabase client variable `supabase` */}
+              {/* 该 variable 是通过 createClient 初始化而来的, 初始化过程中会从 verify link 中提取 token 并将 current session 存储到 local storage */}
+              {/* 此时也就完成了 authentication, 和通过 login form 进行登录的本质是相同的, 最终都是将 current session 存储到 local storage  */}
+              <Route path="dashboard" element={<Dashboard />}></Route>
+              <Route path="account" element={<Account />}></Route>
+              <Route path="bookings" element={<Bookings />}></Route>
+              <Route path="bookings/:bookingId" element={<Booking />}></Route>
+              <Route path="checkin/:bookingId" element={<Checkin />}></Route>
+              <Route path="cabins" element={<Cabins />}></Route>
+              <Route path="users" element={<NewUsers />}></Route>
+              <Route path="settings" element={<Settings />}></Route>
+            </Route>
+            <Route path="login" element={<Login />}></Route>
+            <Route path="*" element={<PageNotFound />}></Route>
+          </Routes>
+        </BrowserRouter>
+        {/* 具体如何调整 toast 的样式, 请参考: https://react-hot-toast.com/docs/styling */}
+        {/* toast 的 position 默认为 fixed, 可通过 containerStyle 修改 */}
+        {/* toaster 下可以有多个 toast, 这些 toast 之间的 gutter 可以通过 prop 'gutter' 调整, 单位默认为 px */}
+        {/* 
           下面定义了 app 全局使用的 toaster, 如果需要多个地方使用 toaster, 请参考 
           https://react-hot-toast.com/docs/multi-toaster 
           实测: toast('xxx') / toast.success('xxx') / toast.error('xxx') 会默认使用没有指定 toasterId 的 toaster
       */}
-      <Toaster
-        position="top-center"
-        gutter={12}
-        containerStyle={{ position: "fixed", margin: "10px", top: "20px" }}
-        toastOptions={{
-          success: { duration: 3000 }, // 操作成功提示, 3s 后自动 dismiss, 对应 toast.success('xxx')
-          error: { duration: 5000 }, // 操作失败提示, 3s 后自动 dismiss, 对应 toast.error('yyy')
-          style: {
-            fontSize: "16px",
-            maxWidth: "500px",
-            padding: "16px 24px",
-            backgroundColor: "var(--color-grey-0)",
-            color: "var(--color-grey-700)",
-          },
-        }}
-      />
-    </QueryClientProvider>
+        <Toaster
+          position="top-center"
+          gutter={12}
+          containerStyle={{ position: "fixed", margin: "10px", top: "20px" }}
+          toastOptions={{
+            success: { duration: 3000 }, // 操作成功提示, 3s 后自动 dismiss, 对应 toast.success('xxx')
+            error: { duration: 5000 }, // 操作失败提示, 3s 后自动 dismiss, 对应 toast.error('yyy')
+            style: {
+              fontSize: "16px",
+              maxWidth: "500px",
+              padding: "16px 24px",
+              backgroundColor: "var(--color-grey-0)",
+              color: "var(--color-grey-700)",
+            },
+          }}
+        />
+      </QueryClientProvider>
+    </ThemeContextProvider>
   );
 }
