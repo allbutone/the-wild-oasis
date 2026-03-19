@@ -75,7 +75,10 @@ export default function Filter({ fieldName, options }) {
               prevParams.set(fieldName, option.value);
               // 修改过滤条件后, 应该重新从第一页显示, 否则如果当前 page 是第 10 页
               // 过滤后的数据可能没有那么多页, 导致没有任何数据可以展示
-              prevParams.set("page", 1);
+              // 为此需要处理如下:
+              if (prevParams.get("page")) {
+                prevParams.set("page", 1);
+              }
               return prevParams;
             });
           }}

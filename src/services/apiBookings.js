@@ -1,4 +1,3 @@
-import { getToday } from "../utils/helpers";
 import supabase from "./supabase";
 
 // filter 是一个 object, 其中:
@@ -72,13 +71,13 @@ export async function getBooking(id) {
   return data;
 }
 
-// Returns all BOOKINGS that are were created after the given date. Useful to get bookings created in the last 30 days, for example.
-export async function getBookingsAfterDate(date) {
+// 查询: created_at(下单时间)在 time span 内的 bookings
+export async function getBookingsByCreatedAtBetween(from, to) {
   const { data, error } = await supabase
     .from("bookings")
     .select("created_at, totalPrice, extrasPrice")
-    .gte("created_at", date)
-    .lte("created_at", getToday({ end: true }));
+    .gte("created_at", from)
+    .lte("created_at", to);
 
   if (error) {
     console.error(error);
@@ -88,14 +87,13 @@ export async function getBookingsAfterDate(date) {
   return data;
 }
 
-// Returns all STAYS that are were created after the given date
-export async function getStaysAfterDate(date) {
+// 查询: startDate(入住时间)在 time span 内的 bookings
+export async function getBookingsByStartAtBetween(from, to) {
   const { data, error } = await supabase
     .from("bookings")
-    // .select('*')
     .select("*, guests(fullName)")
-    .gte("startDate", date)
-    .lte("startDate", getToday());
+    .gte("startDate", from)
+    .lte("startDate", to);
 
   if (error) {
     console.error(error);
@@ -106,7 +104,7 @@ export async function getStaysAfterDate(date) {
 }
 
 // Activity means that there is a check in or a check out today
-export async function getStaysTodayActivity() {
+/* export async function getStaysTodayActivity() {
   const { data, error } = await supabase
     .from("bookings")
     .select("*, guests(fullName, nationality, countryFlag)")
@@ -125,7 +123,7 @@ export async function getStaysTodayActivity() {
   }
   return data;
 }
-
+*/
 export async function updateBooking(id, fieldsToUpdate) {
   const { data, error } = await supabase
     .from("bookings")
