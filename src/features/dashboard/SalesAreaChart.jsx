@@ -17,8 +17,11 @@ import { useDarkMode } from "../../context/ThemeContext";
 const StyledChartContainer = styled(DashboardBox)`
   // 占据 whole row, 相当于指定了 width
   grid-column: 1 / -1;
-  width: 100%;
-  height: fit-content;
+
+  // grid item 内的 chart 居中展示:
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 export default function SalesAreaChart({ stats, title }) {
   const { isDarkMode } = useDarkMode();
@@ -36,6 +39,7 @@ export default function SalesAreaChart({ stats, title }) {
       <Heading as={"h2"}>{title}</Heading>
       <AreaChart
         style={{
+          width: "100%",
           aspectRatio: 16 / 9,
         }}
         responsive

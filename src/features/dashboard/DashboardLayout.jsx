@@ -13,11 +13,16 @@ import { formatCurrency } from "../../utils/helpers.js";
 import { useCabins } from "../cabins/useCabins.js";
 import SalesAreaChart from "./SalesAreaChart.jsx";
 import { eachDayOfInterval, format, subDays } from "date-fns";
+import DurationPieChart from "./DurationPieChart.jsx";
 
 const StyledDashboardLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: auto 34rem auto;
+
+  // 课程里给出的样式: 会导致第二行的 pie chart 因为高度不足而纵向溢出展示
+  // 注释掉就解决问题了:
+  // grid-template-rows: auto 34rem auto;
+
   gap: 2.4rem;
 `;
 export default function DashboardLayout() {
@@ -198,10 +203,12 @@ export default function DashboardLayout() {
         title={"Occupancy Rate"}
         value={`${Math.round(occupancyRate * 100)}%`}
       />
+      {/* 为 confirmedBookings 按照 booking.numNights 分类统计 */}
+      <DurationPieChart confirmedBookings={confirmedBookings} />
       {/* 为 recentCreatedBookings 统计 dailySales 和 dailyExtraSales */}
       <SalesAreaChart
         stats={statsOfRecentCreatedBookings}
-        title={`Daily sales stats from ${format(from, "MMM dd")} to ${format(to, "MMM dd")}`}
+        title={`Daily sales stats from ${format(from, "MMM dd, yyyy")} to ${format(to, "MMM dd, yyyy")}`}
       />
     </StyledDashboardLayout>
   );
