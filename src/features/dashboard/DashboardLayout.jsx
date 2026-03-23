@@ -14,6 +14,7 @@ import { useCabins } from "../cabins/useCabins.js";
 import SalesAreaChart from "./SalesAreaChart.jsx";
 import { eachDayOfInterval, format, subDays } from "date-fns";
 import DurationPieChart from "./DurationPieChart.jsx";
+import TodayActivities from "./TodayActivities.jsx";
 
 const StyledDashboardLayout = styled.div`
   display: grid;
@@ -22,6 +23,10 @@ const StyledDashboardLayout = styled.div`
   // 课程里给出的样式: 会导致第二行的 pie chart 因为高度不足而纵向溢出展示
   // 注释掉就解决问题了:
   // grid-template-rows: auto 34rem auto;
+
+  // 但如果不指定第二行的高度, 第二行左侧展示的 today activities 会一直纵向延伸
+  // 为此, 需要将第二行高度指定为 55rem, 然后通过 css 将 today activities 纵向滚动展示
+  grid-template-rows: auto 55rem auto;
 
   gap: 2.4rem;
 `;
@@ -203,6 +208,7 @@ export default function DashboardLayout() {
         title={"Occupancy Rate"}
         value={`${Math.round(occupancyRate * 100)}%`}
       />
+      <TodayActivities />
       {/* 为 confirmedBookings 按照 booking.numNights 分类统计 */}
       <DurationPieChart confirmedBookings={confirmedBookings} />
       {/* 为 recentCreatedBookings 统计 dailySales 和 dailyExtraSales */}

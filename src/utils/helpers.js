@@ -17,6 +17,11 @@ export const getUTCEndOfDay = function (date) {
   return date;
 };
 
+export const getUTCStartOfDay = function (date) {
+  date.setUTCHours(0, 0, 0, 0);
+  return date;
+};
+
 export const formatCurrency = (value) =>
   new Intl.NumberFormat("en", { style: "currency", currency: "USD" }).format(
     value,

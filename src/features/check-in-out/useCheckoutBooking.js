@@ -10,6 +10,9 @@ export function useCheckoutBooking() {
     },
     onSuccess: (result) => {
       toast.success(`booking of id ${result.id} successfully checked out!`);
+      // 默认的 invalidateQueries() 相当于:
+      // queryClient.invalidateQueries({ type: "all", refetchType: "active" });
+      // 不过可以自定义如下:
       queryClient.invalidateQueries({ type: "active", refetchType: "active" });
     },
     onError: (err) => {

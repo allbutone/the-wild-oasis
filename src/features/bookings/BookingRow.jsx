@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { format, isToday } from "date-fns";
 
-import Tag from "../../ui/Tag";
+import StyledSpan from "../../ui/Span";
 
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
@@ -107,7 +107,7 @@ function BookingRow({
 
       {/* column4 */}
       {/* Tag 是一个 styled component, 会根据 props 'color' 来展示 status 对应的 color */}
-      <Tag color={statusToColor[status]}>{status.replace("-", " ")}</Tag>
+      <StyledSpan color={statusToColor[status]}>{status.replace("-", " ")}</StyledSpan>
 
       {/* column5 */}
       <Amount>{formatCurrency(totalPrice)}</Amount>

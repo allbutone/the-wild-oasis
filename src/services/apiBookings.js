@@ -1,3 +1,4 @@
+import { getUTCStartOfDay } from "../utils/helpers";
 import supabase from "./supabase";
 
 // filter 是一个 object, 其中:
@@ -103,19 +104,24 @@ export async function getBookingsByStartAtBetween(from, to) {
   return data;
 }
 
-// Activity means that there is a check in or a check out today
-/* export async function getStaysTodayActivity() {
+// today activity 分两种情况:
+// 1. status 为 unconfirmed, 但是 startDate 是今天, 即: 今日即将签到的 booking
+// 2. status 为 checked-in, 但是 endDate 是今天, 即: 今日即将签出的 booking
+export async function getTodayActivities() {
+  const today = getUTCStartOfDay(new Date()).toISOString(); // timestamp 类型的 field 需要使用 ISO string 来查询
+
+  // or(string_condition) 中: string_condition 遵守的是 PostgREST DSL syntax
+  // supabase.js 负责通过 method chain (包括 method 'or') 构建符合 PostgREST DSL 的查询参数, 并发出 http request
+  // PostgREST 负责解析请求中的 PostgREST DSL 查询参数, 将其转换为 SQL 并执行
   const { data, error } = await supabase
     .from("bookings")
     .select("*, guests(fullName, nationality, countryFlag)")
+    // 发现 or(string) 内的 string 如果为了可读性添加换行符, 就会报错
     .or(
-      `and(status.eq.unconfirmed,startDate.eq.${getToday()}),and(status.eq.checked-in,endDate.eq.${getToday()})`,
+      `and(status.eq.unconfirmed,startDate.eq.${today}),and(status.eq.checked-in,endDate.eq.${today})`,
     )
     .order("created_at");
-
-  // Equivalent to this. But by querying this, we only download the data we actually need, otherwise we would need ALL bookings ever created
-  // (stay.status === 'unconfirmed' && isToday(new Date(stay.startDate))) ||
-  // (stay.status === 'checked-in' && isToday(new Date(stay.endDate)))
+  // 借助 PostgREST 的优点: 在不创建数据库视图的情况下, 实现了数据库视图的功能.
 
   if (error) {
     console.error(error);
@@ -123,7 +129,7 @@ export async function getBookingsByStartAtBetween(from, to) {
   }
   return data;
 }
-*/
+
 export async function updateBooking(id, fieldsToUpdate) {
   const { data, error } = await supabase
     .from("bookings")

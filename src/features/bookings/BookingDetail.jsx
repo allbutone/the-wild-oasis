@@ -3,7 +3,7 @@ import styled from "styled-components";
 import BookingDataBox from "./BookingDataBox";
 import StyledRow from "../../ui/Row";
 import Heading from "../../ui/Heading";
-import Tag from "../../ui/Tag";
+import StyledSpan from "../../ui/Span";
 import ButtonGroup from "../../ui/ButtonGroup";
 import Button from "../../ui/Button";
 import ButtonText from "../../ui/ButtonText";
@@ -55,7 +55,7 @@ function BookingDetail() {
       <StyledRow type="horizontal">
         <HeadingGroup>
           <Heading as="h1">Booking #{id}</Heading>
-          <Tag color={statusToColor[status]}>{status.replace("-", " ")}</Tag>
+          <StyledSpan color={statusToColor[status]}>{status.replace("-", " ")}</StyledSpan>
         </HeadingGroup>
         <ButtonText onClick={moveBack}>&larr; Back</ButtonText>
       </StyledRow>

@@ -42,7 +42,8 @@ function CheckinBooking() {
   // 记录 customer 是否需要订早餐
   const [needBreakfast, setNeedBreakfast] = useState(false);
 
-  const { checkin, isCheckingIn, isCheckinError, checkInError } = useCheckinBooking();
+  const { checkin, isCheckingIn, isCheckinError, checkInError } =
+    useCheckinBooking();
 
   // 当 booking 加载完毕后, 需要:
   // 1. 将 state 'confirmPaid' 和 booking.isPaid 进行同步
@@ -122,7 +123,7 @@ function CheckinBooking() {
         onChange={() => setConfirmPaid((v) => !v)}
         disabled={confirmPaid}
       >
-        customer {booking.guests.fullName} has paid
+        customer {booking.guests.fullName} has paid{" "}
         {needBreakfast
           ? `${formatCurrency(booking.cabinPrice + totalPriceForBreakfast)} for cabin ${formatCurrency(booking.cabinPrice)} and breakfast ${formatCurrency(totalPriceForBreakfast)}`
           : `${formatCurrency(booking.cabinPrice)} (for cabin)`}
