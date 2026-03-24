@@ -17,6 +17,7 @@ import { useCheckoutBooking } from "../check-in-out/useCheckoutBooking";
 import { useDeleteBooking } from "../check-in-out/useDeleteBooking";
 import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
+import Empty from "../../ui/Empty";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -46,6 +47,11 @@ function BookingDetail() {
 
   if (isLoading) {
     return <Spinner />;
+  }
+
+  // 如果没有找到对应的 Booking, 为了不让后续代码报错, 需要处理如下:
+  if(!booking){
+    return <Empty resource={"booking"} />
   }
 
   const { id, status } = booking;
