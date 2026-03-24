@@ -35,7 +35,8 @@ const StyledMenuList = styled.ul`
 
   //left: ${(props) => props.position.right - props.position.width / 2}px;
   //top: ${(props) => props.position.bottom - props.position.height / 2}px;
-  right: ${(props) => window.innerWidth - props.position.right + props.position.width / 2}px;
+  right: ${(props) =>
+    window.innerWidth - props.position.right + props.position.width / 2}px;
   top: ${(props) => props.position.bottom - props.position.height / 2}px;
 `;
 // 一开始为了测试方便, 可以先这么设置:
@@ -116,11 +117,19 @@ export default function Menus({ children }) {
 // props 'id': which menu list to launch/open
 // LaunchButton 负责设置 currentId, 如果某个 MenuList 的 id 与其匹配, 该 MenuList 就会被展示
 function LaunchButton({ children, id }) {
-  const { openMenuList, setPosition } = useContext(MenuContext);
+  const { currentId, openMenuList, closeAllMenuList, setPosition } =
+    useContext(MenuContext);
 
   function handleClick(e) {
-    // 设定: 哪个 MenuList 需要展示
-    openMenuList(id);
+    e.stopPropagation(); // 为什么添加这行, 详见本次 commit 所添加的代码注释
+
+    if (currentId === id) {
+      // 如果 LaunchButton 对应的 MenuList 已经打开了, 就将其关闭
+      closeAllMenuList();
+    } else {
+      // 否则, 就打开 LaunchButton 对应的 MenuList
+      openMenuList(id);
+    }
 
     // 获取 `click 时光标的位置信息`
     // e.target 返回 Element
@@ -169,7 +178,7 @@ function Menu({ children, onClick }) {
 
   function handleClick(e) {
     // console.log(`menu button of ${currentId} clicked`);
-    onClick?.(); // 如果 menu button 指定了 'click' handler, 就执行
+    onClick?.(e); // 如果 menu button 指定了 'click' handler, 就执行
 
     closeAllMenuList();
     // 上行代码存在的问题:

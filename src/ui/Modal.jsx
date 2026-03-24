@@ -133,10 +133,12 @@ function LaunchButton({ children, launches }) {
   // return children;
   // 但可借助 cloneElement 实现: 为 children "添加" props 'onClick' 如下
   return cloneElement(children, {
-    onClick: () => {
+    onClick: (e) => {
+      // onClick 是自定义的 props, 不是 react 原生的 props, 因此其 argument 'e' 需要被 caller 传进来才能使用
+      e.stopPropagation(); // 为什么添加这行, 详见本次 commit 所添加的代码注释
+
       console.log(`modal launches button of ${launches} clicked!`);
       openModalContent(launches);
-      // e.stopPropagation();
     },
   });
 }
