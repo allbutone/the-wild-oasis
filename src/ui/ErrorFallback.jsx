@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import Heading from "./Heading";
+import Button from "./Button";
 
 const StyledErrorFallback = styled.main`
   height: 100vh;
@@ -29,3 +31,26 @@ const Box = styled.div`
     color: var(--color-grey-500);
   }
 `;
+//参考:
+//https://react-error-boundary-lib.vercel.app/examples/fallback-component
+export default function ErrorFallback(props) {
+  console.log(props); // 查看可以解构出哪些 props
+  const { error, resetErrorBoundary } = props;
+  return (
+    <StyledErrorFallback>
+      <Box>
+        <Heading as={"h1"}>oops! there's an error occurred!🙀</Heading>
+        <p>root cause: {error.message}</p>
+        <Button
+          size="large"
+          variation="primary"
+          onClick={() => {
+            resetErrorBoundary();
+          }}
+        >
+          GO BACK
+        </Button>
+      </Box>
+    </StyledErrorFallback>
+  );
+}

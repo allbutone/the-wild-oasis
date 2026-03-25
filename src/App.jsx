@@ -6,7 +6,6 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import NewUsers from "./pages/Users";
 import PageNotFound from "./pages/PageNotFound";
-import GlobalStyles from "./styles/GlobalStyles";
 import AppLayout from "./ui/AppLayout";
 import Settings from "./pages/Settings";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -27,8 +26,6 @@ export default function App() {
     <ThemeContextProvider>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={true} />
-        {/* 开发项目之前, 使用 GlobalStyles 来重置样式 */}
-        <GlobalStyles />
         <BrowserRouter>
           <Routes>
             <Route
