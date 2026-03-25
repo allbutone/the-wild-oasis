@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import Logo from "./Logo";
 import MainNav from "./MainNav";
-import Uploader from "../data/Uploader";
+// import Uploader from "../data/Uploader";
 
 //sidebar 占据第一行(1)到最后一行(-1)
 const StyledSideBar = styled.aside`
@@ -27,7 +27,7 @@ export default function Sidebar() {
       {/* 需要为每个 table 开启增删改查对应的 RLS(row level security) Policy */}
       {/* cabin photos 需要手动上传到 bucket, 且需要将 bucket 设置为 public */}
       {/* 否则 cabin.image 无法使用 image file 对应的 public url */}
-      <Uploader />
+      {/* <Uploader /> */}
     </StyledSideBar>
   );
 }
